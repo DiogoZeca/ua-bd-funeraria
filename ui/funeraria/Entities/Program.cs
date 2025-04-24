@@ -8,15 +8,18 @@ namespace funeraria
 {
     static class Program
     {
-        /// <summary>
-        /// Ponto de entrada principal para o aplicativo.
-        /// </summary>
-        [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            LoginForm loginForm = new LoginForm();
+            if (loginForm.ShowDialog() == DialogResult.OK)
+            {
+                // Usuário logou com sucesso, abrir o formulário principal
+                Application.Run(new MainForm()); // Substitua MainForm pelo nome do seu formulário principal
+            }
+            // Se cancelar, o aplicativo simplesmente termina
         }
     }
 }
