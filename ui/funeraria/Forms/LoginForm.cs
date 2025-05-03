@@ -1,70 +1,79 @@
-﻿using System;
+﻿using funeraria.Entities;
+using funeraria.Forms;
+using System;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace funeraria
 {
     public partial class LoginForm : Form
     {
+        public string username;
+        public static int userId;
+
         public LoginForm()
         {
             InitializeComponent();
         }
 
-        private void btnEntrar_Click(object sender, EventArgs e)
+        private void btnLogIn_Click(object sender, EventArgs e)
         {
-            try
+            string username = txtUsername.Text;
+            string password = txtPassword.Text;
+            Database db = Database.GetDatabase();
+
+            if (string.IsNullOrWhiteSpace(username))
             {
-                // Validação para garantir que os campos não estejam vazios
-                if (string.IsNullOrWhiteSpace(txtUsuario.Text))
-                {
-                    MessageBox.Show("Por favor, digite o nome de usuário.", "Aviso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtUsuario.Focus();
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(txtSenha.Text))
-                {
-                    MessageBox.Show("Por favor, digite a senha.", "Aviso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtSenha.Focus();
-                    return;
-                }
-
-                // Simulação de validação de credenciais (substituir por lógica real)
-                if (ValidarCredenciais(txtUsuario.Text, txtSenha.Text))
-                {
-                    MessageBox.Show("Login realizado com sucesso!", "Sucesso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DialogResult = DialogResult.OK;
-                    Close(); // Fecha o formulário após login bem-sucedido
-                }
-                else
-                {
-                    MessageBox.Show("Usuário ou senha incorretos!", "Erro",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    txtSenha.Clear();
-                    txtUsuario.Focus();
-                }
+                MessageBox.Show("Please enter a username!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            catch (Exception ex)
+
+            if (string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show($"Ocorreu um erro: {ex.Message}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Please enter a password!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (db.AuthenticateUser(username, password))
+            {
+                MessageBox.Show("Login successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.DialogResult = DialogResult.OK;
+                this.username = username;
+
+                this.Hide();
+
+                MainForm mainPage = new MainForm(this);
+                mainPage.Show();
+            }
+            else
+            {
+                txtUsername.Clear();
+                txtPassword.Clear();
+                txtUsername.Focus();
             }
         }
 
-        private void btnCancelar_Click(object sender, EventArgs e)
+        public int getUserId()
         {
-            // Define o resultado como Cancel e fecha o formulário
-            DialogResult = DialogResult.Cancel;
-            Close();
+            return userId;
         }
 
-        private bool ValidarCredenciais(string usuario, string senha)
+        public void clear()
         {
-            // Substituir por lógica real, como consulta a um banco de dados
-            return usuario == "admin" && senha == "123456";
+            txtPassword.Clear();
+            txtUsername.Clear();
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnSignUp_Click(object sender, EventArgs e)
+        {
+            RegisterForm registerForm = new RegisterForm();
+            registerForm.Show();
+            this.Hide();
         }
     }
 }
