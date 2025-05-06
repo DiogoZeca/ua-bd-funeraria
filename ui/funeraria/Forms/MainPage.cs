@@ -532,7 +532,9 @@ namespace funeraria.Forms
             if (dataGridProcess.Columns[e.ColumnIndex].Name == "Info")
             {
                 int id = Convert.ToInt32(dataGridProcess.Rows[e.RowIndex].Cells["ProcessNum"].Value);
-                
+                InfoProcessForm infoForm = new InfoProcessForm(id);
+                infoForm.FormClosed += (s, args) => loadProcess();
+                infoForm.Show();
             }
         }
         private void gridCemetery_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -916,7 +918,12 @@ namespace funeraria.Forms
             floristForm.FormClosed += (s, args) => LoadFlorist();
             floristForm.Show();
         }
-
+        private void addNewProcess_Click(object sender, EventArgs e)
+        {
+            InfoProcessForm infoProcessForm = new InfoProcessForm();
+            infoProcessForm.FormClosed += (s, args) => loadProcess();
+            infoProcessForm.Show();
+        }
 
 
         private void logOutPicture_Click(object sender, EventArgs e)

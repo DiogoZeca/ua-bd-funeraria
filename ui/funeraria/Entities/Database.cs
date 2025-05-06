@@ -21,15 +21,15 @@ namespace funeraria.Entities
         private static readonly object lockObject = new object();
 
         // This is for SQL Server Authentication when using a username and password instead of Windows Authentication
-        //private static string serverAddress = "tcp:mednat.ieeta.pt\\SQLSERVER,8101";
-        //private static string databaseName = "p2g7";
-        //private static string databaseUsername = "p2g7";
-        //private static string databasePassword = "Zeca_Duarte_2025";
-        //private static string connectionString = "data source=" + serverAddress + ";initial catalog=" + databaseName + ";uid=" + databaseUsername + ";password=" + databasePassword;
+        private static string serverAddress = "tcp:mednat.ieeta.pt\\SQLSERVER,8101";
+        private static string databaseName = "p2g7";
+        private static string databaseUsername = "p2g7";
+        private static string databasePassword = "Zeca_Duarte_2025";
+        private static string connectionString = "data source=" + serverAddress + ";initial catalog=" + databaseName + ";uid=" + databaseUsername + ";password=" + databasePassword;
 
-        private static string serverAddress = "(localdb)\\MSSQLLocalDB";
-        private static string databaseName = "FuneralServiceDB";
-        private static string connectionString = "data source=" + serverAddress + ";initial catalog=" + databaseName + ";Integrated Security=True";
+        //private static string serverAddress = "(localdb)\\MSSQLLocalDB";
+        //private static string databaseName = "FuneralServiceDB";
+        //private static string connectionString = "data source=" + serverAddress + ";initial catalog=" + databaseName + ";Integrated Security=True";
 
 
         private Database() { }
@@ -1089,7 +1089,9 @@ namespace funeraria.Entities
             }
         }
 
-
+        //
+        // PROCESS METHODS
+        //
 
         public DataTable GetAllProcessList()
         {
@@ -1109,6 +1111,35 @@ namespace funeraria.Entities
                 }
             }
         }
+
+        public static void DeleteProcess(int id)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand("DELETE FROM Process WHERE num_process = @ProcessID", connection))
+                {
+                    command.Parameters.AddWithValue("@ProcessID", id);
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    catch (SqlException ex)
+                    {
+                        MessageBox.Show("SQL error \r\n" + ex.Message, "Delete Process Error", MessageBoxButtons.OK);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error \r\n" + ex.Message, "Delete Process Error", MessageBoxButtons.OK);
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+        }
+
 
         public DataTable GetAllProductId()
         {

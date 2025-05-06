@@ -229,7 +229,7 @@ namespace funeraria.Forms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 252F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 160F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 163F));
             this.tableLayoutPanel1.Controls.Add(this.pictureBox2, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.Username, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.pictureMainTab, 0, 0);
@@ -244,9 +244,9 @@ namespace funeraria.Forms
             // 
             this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox2.Image = global::funeraria.Properties.Resources.lock1;
-            this.pictureBox2.Location = new System.Drawing.Point(1078, 6);
+            this.pictureBox2.Location = new System.Drawing.Point(1075, 6);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(154, 94);
+            this.pictureBox2.Size = new System.Drawing.Size(157, 94);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 1;
             this.pictureBox2.TabStop = false;
@@ -308,6 +308,7 @@ namespace funeraria.Forms
             this.addNewProcess.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.addNewProcess.TabIndex = 1;
             this.addNewProcess.TabStop = false;
+            this.addNewProcess.Click += new System.EventHandler(this.addNewProcess_Click);
             // 
             // tableLayoutPanel3
             // 

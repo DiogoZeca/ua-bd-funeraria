@@ -83,6 +83,12 @@
     <Compile Include="Forms\FloristForm.Designer.cs">
       <DependentUpon>FloristForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\InfoProcessForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InfoProcessForm.Designer.cs">
+      <DependentUpon>InfoProcessForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PriestForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -123,6 +129,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FloristForm.resx">
       <DependentUpon>FloristForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InfoProcessForm.resx">
+      <DependentUpon>InfoProcessForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
