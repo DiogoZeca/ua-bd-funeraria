@@ -25,7 +25,7 @@ BEGIN
         DECLARE @User NVARCHAR(100);
         DECLARE @Pass NVARCHAR(256);
 
-        SELECT @ID = num_func, @User=username, @Pass=password
+        SELECT @ID = id, @User=username, @Pass=password
 		FROM dbo.Users
         WHERE username = @Username;
 
