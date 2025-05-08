@@ -1093,6 +1093,26 @@ namespace funeraria.Entities
         // PROCESS METHODS
         //
 
+        public DataTable GetProcessById(int id)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                String command = "SELECT * FROM Process WHERE num_process = @processID";
+                using (SqlCommand cmd = new SqlCommand(command, connection))
+                {
+                    cmd.Parameters.AddWithValue("@processID", id);
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+                        DataTable table = new DataTable();
+                        adapter.Fill(table);
+                        connection.Close();
+                        return table;
+                    }
+                }
+            }
+        }
+
         public DataTable GetAllProcessList()
         {
             using (SqlConnection connection = ConnectDB())
@@ -1112,35 +1132,35 @@ namespace funeraria.Entities
             }
         }
 
-        public static void DeleteProcess(int id)
+        public bool ProccessExists( int ProcNumber )
         {
             using (SqlConnection connection = ConnectDB())
             {
                 connection.Open();
-                using (SqlCommand command = new SqlCommand("DELETE FROM Process WHERE num_process = @ProcessID", connection))
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.findProcessExists(@ProcNumber)", connection))
                 {
-                    command.Parameters.AddWithValue("@ProcessID", id);
-                    try
+                    cmd.Parameters.AddWithValue("@ProcNumber", ProcNumber);
+                    object result = cmd.ExecuteScalar();
+                    if (result != null && int.TryParse(result.ToString(), out int count))
                     {
-                        command.ExecuteNonQuery();
+                        return count > 0;
                     }
-                    catch (SqlException ex)
-                    {
-                        MessageBox.Show("SQL error \r\n" + ex.Message, "Delete Process Error", MessageBoxButtons.OK);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error \r\n" + ex.Message, "Delete Process Error", MessageBoxButtons.OK);
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
+                    return false;
                 }
             }
         }
 
+        public bool AddProcess(string processNumber, string fullName, string bi, char sex, string local, DateTime funeralDate, string relationship, string clientName, string coffinId, int urnId, int churchId, string priestBi, string funeralType, string nationality, string address, string maritalStatus, DateTime birthDate) {
 
+            
+
+        }
+
+
+
+        //
+        // PRODUCT METHODS
+        //
         public DataTable GetAllProductId()
         {
             using (SqlConnection connection = ConnectDB())
@@ -1170,11 +1190,22 @@ namespace funeraria.Entities
                 {
                     cmd.Parameters.AddWithValue("@productID", id);
                     object result = cmd.ExecuteScalar();
-                    MessageBox.Show(result.ToString());
                     return result != null ? result.ToString() : null;
                 }
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
 
         public String GetDeceasedNameByProcessId(decimal processId)
         {
@@ -1220,6 +1251,8 @@ namespace funeraria.Entities
                 }
             }
         }
+
+        
 
     }
 }

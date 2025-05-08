@@ -1,3 +1,4 @@
+-- SQLBook: Code
 DROP FUNCTION IF EXISTS dbo.findBiExists;
 DROP FUNCTION IF EXISTS dbo.findNifExists;
 GO
@@ -33,6 +34,25 @@ BEGIN
         SELECT 1
         FROM Florist fl
         WHERE fl.nif = @nif
+    )
+        SET @exists = 1;
+    ELSE
+        SET @exists = 0;
+
+    RETURN @exists;
+END
+GO
+
+CREATE FUNCTION db.findProcNumberExists(@proc_number INT)
+RETURNS BIT
+AS 
+BEGIN
+    DECLARE @exists BIT;
+
+    IF EXISTS (
+        SELECT 1
+        FROM Process pr
+        WHERE pr.num_process = @proc_number
     )
         SET @exists = 1;
     ELSE

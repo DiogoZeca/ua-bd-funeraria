@@ -1,3 +1,4 @@
+-- SQLBook: Code
 CREATE SCHEMA project
 GO
 
