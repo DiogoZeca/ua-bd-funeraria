@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using funeraria.Entities;
 
 namespace funeraria.Forms
 {
@@ -68,16 +69,7 @@ namespace funeraria.Forms
         {
             // Calculate total height of content in panel
             CalculateContentHeight();
-            
-            // Configure scroll bar properties
-            vScrollBar1.Minimum = 0;
-            vScrollBar1.Maximum = Math.Max(0, totalContentHeight - panel1.Height);
-            vScrollBar1.SmallChange = 20;
-            vScrollBar1.LargeChange = panel1.Height / 2;
-            
-            // Initialize panel scroll position
-            panelScrollPosition = 0;
-            UpdatePanelPosition();
+
         }
 
         private void CalculateContentHeight()
@@ -87,8 +79,7 @@ namespace funeraria.Forms
             {
                 maxBottom = Math.Max(maxBottom, c.Bottom);
             }
-
-            // Define o tamanho mínimo necessário para o scroll
+            
             panel1.AutoScrollMinSize = new Size(panel1.ClientSize.Width, maxBottom + 20);
         }
 
