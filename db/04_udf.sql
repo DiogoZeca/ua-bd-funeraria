@@ -2,6 +2,8 @@
 DROP FUNCTION IF EXISTS dbo.findBiExists;
 DROP FUNCTION IF EXISTS dbo.findNifExists;
 GO
+DROP FUNCTION IF EXISTS dbo.findProcNumberExists;
+GO
 
 CREATE FUNCTION dbo.findBiExists(@bi VARCHAR(50))
 RETURNS BIT
@@ -43,7 +45,7 @@ BEGIN
 END
 GO
 
-CREATE FUNCTION db.findProcNumberExists(@proc_number INT)
+CREATE FUNCTION dbo.findProcNumberExists(@proc_number INT)
 RETURNS BIT
 AS 
 BEGIN

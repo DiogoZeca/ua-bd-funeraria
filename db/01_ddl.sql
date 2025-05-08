@@ -1,6 +1,6 @@
 -- SQLBook: Code
-CREATE SCHEMA project
-GO
+-- CREATE SCHEMA project
+-- GO
 
 IF OBJECT_ID('dbo.Cremation', 'U') IS NOT NULL
     DROP TABLE dbo.Cremation
@@ -24,12 +24,12 @@ IF OBJECT_ID('dbo.Cemetery', 'U') IS NOT NULL
     DROP TABLE dbo.Cemetery
 IF OBJECT_ID('dbo.Have', 'U') IS NOT NULL
     DROP TABLE dbo.Have
+IF OBJECT_ID('dbo.Funeral', 'U') IS NOT NULL
+    DROP TABLE dbo.Funeral
 IF OBJECT_ID('dbo.Church', 'U') IS NOT NULL
     DROP TABLE dbo.Church
 IF OBJECT_ID('dbo.Priest', 'U') IS NOT NULL
     DROP TABLE dbo.Priest
-IF OBJECT_ID('dbo.Funeral', 'U') IS NOT NULL
-    DROP TABLE dbo.Funeral
 IF OBJECT_ID('dbo.Process', 'U') IS NOT NULL
     DROP TABLE dbo.Process
 IF OBJECT_ID('dbo.Deceased', 'U') IS NOT NULL
@@ -70,7 +70,7 @@ CREATE TABLE dbo.Deceased (
     person_bi VARCHAR(50) PRIMARY KEY REFERENCES dbo.Person(bi),
     sex CHAR(1),
     birth_date DATE,
-    marital_estate VARCHAR(50),
+    marital_status VARCHAR(50),
     residence VARCHAR(255),
     nationality VARCHAR(100),
     picture VARBINARY(MAX)
@@ -85,16 +85,9 @@ CREATE TABLE dbo.Process (
     type_of_payment VARCHAR(50),
     user_id INT REFERENCES dbo.Users(id),
 	client_id VARCHAR(50) REFERENCES dbo.Client(client_bi),
-    degree_kinship VARCHAR(255),
+    degree_kinship VARCHAR(255)
 );
 
-CREATE TABLE dbo.Funeral (
-    num_process INT REFERENCES dbo.Process(num_process),
-    funeral_date DATE,
-    location VARCHAR(255),
-    deceased_bi VARCHAR(50) REFERENCES dbo.Deceased(person_bi),
-	PRIMARY KEY (num_process)
-);
 
 CREATE TABLE dbo.Priest (
     representative_bi VARCHAR(50) PRIMARY KEY REFERENCES dbo.Representative(person_bi),
@@ -105,6 +98,15 @@ CREATE TABLE dbo.Church (
     id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
     name VARCHAR(255),
     location VARCHAR(255)
+);
+
+CREATE TABLE dbo.Funeral (
+    num_process INT REFERENCES dbo.Process(num_process),
+    funeral_date DATE,
+    location VARCHAR(255),
+    deceased_bi VARCHAR(50) REFERENCES dbo.Deceased(person_bi),
+    church_id INT REFERENCES dbo.Church(id),
+	PRIMARY KEY (num_process)
 );
 
 CREATE TABLE dbo.Have (
@@ -175,7 +177,7 @@ CREATE TABLE dbo.Cremation (
 CREATE TABLE dbo.Burial (
     funeral_id INT REFERENCES dbo.Funeral(num_process),
     cemetery_id INT REFERENCES dbo.Cemetery(id),
-    conffin_id INT REFERENCES dbo.Coffin(id),
+    coffin_id INT REFERENCES dbo.Coffin(id),
     num_grave INT,
     PRIMARY KEY (funeral_id)
 );

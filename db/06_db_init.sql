@@ -1,3 +1,4 @@
+-- SQLBook: Code
 
 INSERT INTO dbo.Users (name, username, password, mail, ProfilePicture) VALUES
 ('Beatriz Costa', 'user1', '0b14d501a594442a01c6859541bcb3e8164d183d32937b', 'user1@example.com', NULL),
@@ -31,7 +32,7 @@ INSERT INTO dbo.Client (client_bi) VALUES
 ('345678903'),
 ('456789014');
 
-INSERT INTO dbo.Deceased (person_bi, sex, birth_date, marital_estate, residence, nationality, picture) VALUES
+INSERT INTO dbo.Deceased (person_bi, sex, birth_date, marital_status, residence, nationality, picture) VALUES
 ('678901236', 'M', '1950-04-12', 'Casado', 'Rua 12', 'Portuguesa', NULL),
 ('789012347', 'F', '1945-08-30', 'Viúvo', 'Rua 34', 'Portuguesa', NULL),
 ('890123458', 'M', '1960-12-15', 'Divorciado', 'Rua 56', 'Portuguesa', NULL),
@@ -45,13 +46,6 @@ INSERT INTO dbo.Process (num_process, start_date, status, budget, description, t
 (1004, '2024-04-01', 'Concluído', 3000.00, 'Crematório + Urna', 'Transferência', 4, '456789014', 'Pai'),
 (1005, '2024-04-12', 'Pendente', 1500.00, 'Aguarda pagamento', 'Cartão', 5, '123456781', 'Neto');
 
-INSERT INTO dbo.Funeral (num_process, funeral_date, location, deceased_bi) VALUES
-(1001, '2024-01-15', 'Igreja Central', '678901236'),
-(1002, '2024-02-20', 'Capela Norte', '789012347'),
-(1003, '2024-03-25', 'Igreja São João', '890123458'),
-(1004, '2024-04-05', 'Capela Nova', '901234569'),
-(1005, '2024-04-15', 'Igreja Matriz', '012345670');
-
 INSERT INTO dbo.Priest (representative_bi, price, title) VALUES
 ('123456781', 300.00, 'Priest'),
 ('234567892', 250.00, 'Deacon'),
@@ -61,6 +55,13 @@ INSERT INTO dbo.Church (name, location) VALUES
 ('Igreja Central', 'Lisboa'),
 ('Capela Norte', 'Porto'),
 ('Igreja São João', 'Coimbra');
+
+INSERT INTO dbo.Funeral (num_process, funeral_date, location, deceased_bi, church_id) VALUES
+(1001, '2024-01-15', 'Igreja Central', '678901236', 1),
+(1002, '2024-02-20', 'Capela Norte', '789012347', 2),
+(1003, '2024-03-25', 'Igreja São João', '890123458', 3),
+(1004, '2024-04-05', 'Capela Nova', '901234569', 1),
+(1005, '2024-04-15', 'Igreja Matriz', '012345670', 2);
 
 INSERT INTO dbo.Have (priest_bi, church_id) VALUES
 ('123456781', 1),
@@ -105,7 +106,7 @@ INSERT INTO dbo.Urn (id) VALUES
 INSERT INTO dbo.Cremation (funeral_id, crematory_id, coffin_id, urn_id) VALUES
 (1004, 1, 3, 4);
 
-INSERT INTO dbo.Burial (funeral_id, cemetery_id, conffin_id, num_grave) VALUES
+INSERT INTO dbo.Burial (funeral_id, cemetery_id, coffin_id, num_grave) VALUES
 (1001, 1, 3, 101),
 (1002, 2, 5, 102),
 (1003, 1, 3, 103),

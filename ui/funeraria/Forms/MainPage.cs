@@ -532,7 +532,7 @@ namespace funeraria.Forms
             if (dataGridProcess.Columns[e.ColumnIndex].Name == "Info")
             {
                 int id = Convert.ToInt32(dataGridProcess.Rows[e.RowIndex].Cells["ProcessNum"].Value);
-                InfoProcessForm infoForm = new InfoProcessForm(id);
+                InfoProcessForm infoForm = new InfoProcessForm(id, this.loginForm.getUserId());
                 infoForm.FormClosed += (s, args) => loadProcess();
                 infoForm.Show();
             }
@@ -920,7 +920,7 @@ namespace funeraria.Forms
         }
         private void addNewProcess_Click(object sender, EventArgs e)
         {
-            InfoProcessForm infoProcessForm = new InfoProcessForm();
+            InfoProcessForm infoProcessForm = new InfoProcessForm(this.loginForm.getUserId());
             infoProcessForm.FormClosed += (s, args) => loadProcess();
             infoProcessForm.Show();
         }

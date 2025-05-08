@@ -1,3 +1,4 @@
+-- SQLBook: Code
 DROP VIEW IF EXISTS vw_AllProducts;
 DROP VIEW IF EXISTS vw_PriestDetails;
 DROP VIEW IF EXISTS vw_PriestWithPerson;
@@ -88,7 +89,7 @@ SELECT
 	d.birth_date,
 	d.residence,
 	d.nationality,
-	d.marital_estate,
+	d.marital_status,
 	per.name
 FROM dbo.Process p
 INNER JOIN dbo.Funeral f ON f.num_process = p.num_process
@@ -104,3 +105,5 @@ SELECT
 FROM dbo.Process p
 INNER JOIN dbo.Funeral f ON f.num_process = p.num_process
 GO
+
+

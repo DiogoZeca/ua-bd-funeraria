@@ -36,6 +36,8 @@
             this.textProccessBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.textClientIDBox = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
             this.comboCoffinBox = new System.Windows.Forms.ComboBox();
             this.comboUrnBox = new System.Windows.Forms.ComboBox();
             this.comboCerimonyPlaceBox = new System.Windows.Forms.ComboBox();
@@ -152,6 +154,8 @@
             // 
             this.panel1.AllowDrop = true;
             this.panel1.AutoScroll = true;
+            this.panel1.Controls.Add(this.textClientIDBox);
+            this.panel1.Controls.Add(this.label22);
             this.panel1.Controls.Add(this.comboCoffinBox);
             this.panel1.Controls.Add(this.comboUrnBox);
             this.panel1.Controls.Add(this.comboCerimonyPlaceBox);
@@ -193,6 +197,24 @@
             this.panel1.Size = new System.Drawing.Size(1161, 742);
             this.panel1.TabIndex = 9;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // textClientIDBox
+            // 
+            this.textClientIDBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textClientIDBox.Location = new System.Drawing.Point(182, 956);
+            this.textClientIDBox.Name = "textClientIDBox";
+            this.textClientIDBox.Size = new System.Drawing.Size(283, 30);
+            this.textClientIDBox.TabIndex = 53;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label22.Location = new System.Drawing.Point(70, 959);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(92, 25);
+            this.label22.TabIndex = 52;
+            this.label22.Text = "Client Id";
             // 
             // comboCoffinBox
             // 
@@ -282,7 +304,7 @@
             this.textClientNameBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textClientNameBox.Location = new System.Drawing.Point(182, 903);
             this.textClientNameBox.Name = "textClientNameBox";
-            this.textClientNameBox.Size = new System.Drawing.Size(283, 30);
+            this.textClientNameBox.Size = new System.Drawing.Size(795, 30);
             this.textClientNameBox.TabIndex = 38;
             // 
             // label16
@@ -298,7 +320,7 @@
             // textRelationshipBox
             // 
             this.textRelationshipBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textRelationshipBox.Location = new System.Drawing.Point(665, 903);
+            this.textRelationshipBox.Location = new System.Drawing.Point(665, 953);
             this.textRelationshipBox.Name = "textRelationshipBox";
             this.textRelationshipBox.Size = new System.Drawing.Size(312, 30);
             this.textRelationshipBox.TabIndex = 36;
@@ -307,7 +329,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(508, 906);
+            this.label17.Location = new System.Drawing.Point(508, 956);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(130, 25);
             this.label17.TabIndex = 35;
@@ -538,7 +560,7 @@
             // buttonChangeIcon
             // 
             this.buttonChangeIcon.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.buttonChangeIcon.Location = new System.Drawing.Point(233, 172);
+            this.buttonChangeIcon.Location = new System.Drawing.Point(72, 202);
             this.buttonChangeIcon.Name = "buttonChangeIcon";
             this.buttonChangeIcon.Size = new System.Drawing.Size(119, 40);
             this.buttonChangeIcon.TabIndex = 11;
@@ -625,5 +647,7 @@
         private System.Windows.Forms.ComboBox comboFuneralTypeBox;
         private System.Windows.Forms.Button SaveButtonProcess;
         private System.Windows.Forms.Button buttonChangeIcon;
+        private System.Windows.Forms.TextBox textClientIDBox;
+        private System.Windows.Forms.Label label22;
     }
 }

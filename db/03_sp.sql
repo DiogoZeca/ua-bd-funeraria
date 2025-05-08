@@ -1,3 +1,4 @@
+-- SQLBook: Code
 DROP PROCEDURE IF EXISTS AuthenticateUser;
 DROP PROCEDURE IF EXISTS RegisterUser;
 DROP PROCEDURE IF EXISTS sp_addCemetery;
@@ -8,6 +9,7 @@ DROP PROCEDURE IF EXISTS sp_updateCemetery;
 DROP PROCEDURE IF EXISTS sp_updateChurch;
 DROP PROCEDURE IF EXISTS sp_updateCrematory;
 DROP PROCEDURE IF EXISTS sp_updateUser;
+DROP PROCEDURE IF EXISTS sp_addProcess;
 GO
 
 CREATE PROCEDURE AuthenticateUser
@@ -328,4 +330,96 @@ BEGIN
         SET @Message = ERROR_MESSAGE();
     END CATCH
 END
+GO
+
+CREATE PROCEDURE sp_addProcess
+    @processNumber INT,
+    @fullName NVARCHAR(255),
+    @bi VARCHAR(50),
+    @sex CHAR(1),
+    @local VARCHAR(255),
+    @funeralDate DATE,
+    @relationship VARCHAR(255),
+    @clientName NVARCHAR(255),
+    @coffinId INT,
+    @urnId INT,
+    @churchId INT,
+    @priestBi VARCHAR(50),
+    @funeralType VARCHAR(50),
+    @nationality VARCHAR(100),
+    @address VARCHAR(255),
+    @maritalStatus VARCHAR(50),
+    @birthDate DATE,
+    @startDate DATE,
+    @status VARCHAR(50),
+    @budget DECIMAL(10,2),
+    @description TEXT,
+    @typeOfPayment VARCHAR(50),
+    @userId INT,
+    @clientId VARCHAR(50)
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Falecido
+        IF NOT EXISTS (SELECT 1 FROM dbo.Person WHERE bi = @bi)
+            INSERT INTO dbo.Person (bi, name) VALUES (@bi, @fullName);
+
+        INSERT INTO dbo.Deceased (person_bi, sex, birth_date, marital_status, residence, nationality, picture)
+        VALUES (@bi, @sex, @birthDate, @maritalStatus, @address, @nationality, NULL);
+
+        -- Cliente
+        IF NOT EXISTS (SELECT 1 FROM dbo.Person WHERE bi = @clientId)
+        BEGIN
+            INSERT INTO dbo.Person (bi, name) VALUES (@clientId, @clientName);
+            INSERT INTO dbo.Representative (person_bi, contact) VALUES (@clientId, NULL);
+            INSERT INTO dbo.Client (client_bi) VALUES (@clientId);
+        END
+
+        -- Processo
+        INSERT INTO dbo.Process (
+            num_process, start_date, status, budget, description,
+            type_of_payment, user_id, client_id, degree_kinship
+        )
+        VALUES (
+            @processNumber, @startDate, @status, @budget, @description,
+            @typeOfPayment, @userId, @clientId, @relationship
+        );
+
+        -- Funeral
+        INSERT INTO dbo.Funeral (
+            num_process, funeral_date, location, deceased_bi, church_id
+        )
+        VALUES (
+            @processNumber, @funeralDate, @local, @bi, @churchId
+        );
+
+        -- Have
+        INSERT INTO dbo.Have (
+            priest_bi, church_id
+        ) 
+        VALUES (
+            @priestBi, @churchId
+        )
+
+        -- Cremation ou Burial
+        IF LOWER(@funeralType) = 'cremation'
+        BEGIN
+            INSERT INTO dbo.Cremation (funeral_id, crematory_id, coffin_id, urn_id)
+            VALUES (@processNumber, NULL, @coffinId, @urnId);
+        END
+        ELSE IF LOWER(@funeralType) = 'burial'
+        BEGIN
+            INSERT INTO dbo.Burial (funeral_id, cemetery_id, coffin_id, num_grave)
+            VALUES (@processNumber, NULL, @coffinId, NULL);
+        END
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK;
+        THROW;
+    END CATCH
+END;
 GO

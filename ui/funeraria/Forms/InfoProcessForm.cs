@@ -14,16 +14,19 @@ namespace funeraria.Forms
     public partial class InfoProcessForm : Form
     {
         private int id;
+        private int numFunc;
         private int panelScrollPosition = 0;
         private int totalContentHeight = 0;
 
-        public InfoProcessForm()
+        public InfoProcessForm(int numFunc)
         {
+            this.numFunc = numFunc;
             InitializeComponent();
             comboFuneralTypeBox.SelectedIndexChanged += ComboFuneralTypeBox_SelectedIndexChanged;
         }
-        public InfoProcessForm(int id)
+        public InfoProcessForm(int id, int numFunc)
         {
+            this.numFunc = numFunc;
             InitializeComponent();
             this.id = id;
         }
@@ -33,7 +36,7 @@ namespace funeraria.Forms
             var result = MessageBox.Show("Tem a certeza que deseja eliminar este processo?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
-                Database.DeleteProcess(id); // Make sure this method exists in your Database class
+                // Database.DeleteProcess(id); // Make sure this method exists in your Database class
                 this.Close();
             }
         }
@@ -67,10 +70,9 @@ namespace funeraria.Forms
             // Load data for all ComboBoxes
             LoadComboBoxData();
 
-            // If editing an existing process, select the appropriate values
             if (id > 0)
             {
-                //LoadProcessData(id);
+                LoadProcessData(id);
             }
 
         }
@@ -131,8 +133,15 @@ namespace funeraria.Forms
                 string priestBi = row["representative_bi"].ToString();
                 string priestName = db.GetPriestNameByPriestBi(priestBi);
                 string priestTitle = row["title"].ToString();
-                comboPriestBox.Items.Add($"{priestTitle} {priestName} ({priestBi})");
-                comboPriestBox.Tag = priestBi; // Store the BI for reference
+                
+                // Create ComboboxItem to properly store the BI
+                ComboboxItem item = new ComboboxItem
+                {
+                    Text = $"{priestTitle} {priestName} ({priestBi})",
+                    Value = priestBi
+                };
+                
+                comboPriestBox.Items.Add(item);
             }
         }
 
@@ -147,8 +156,27 @@ namespace funeraria.Forms
                 string churchId = row["id"].ToString();
                 string churchName = row["name"].ToString();
                 string churchLocation = row["location"].ToString();
-                comboCerimonyPlaceBox.Items.Add($"{churchName} - {churchLocation}");
-                comboCerimonyPlaceBox.Tag = churchId;
+                
+                // Create a custom item class to store both display text and ID
+                ComboboxItem item = new ComboboxItem
+                {
+                    Text = $"{churchName} - {churchLocation}",
+                    Value = churchId
+                };
+                
+                comboCerimonyPlaceBox.Items.Add(item);
+            }
+        }
+
+        // Add this helper class to your form class
+        public class ComboboxItem
+        {
+            public string Text { get; set; }
+            public string Value { get; set; }
+            
+            public override string ToString()
+            {
+                return Text;
             }
         }
 
@@ -189,19 +217,99 @@ namespace funeraria.Forms
         private void LoadProcessData(int processId)
         {
             Database db = Database.GetDatabase();
+            DataTable processData = db.GetProcessById(processId);
 
-            // Load process details and set the combobox selected items
-            // This depends on your database structure
+            int churchId = db.GetChurchIdForProcess(processId);
+            
+            if (processData != null && processData.Rows.Count > 0)
+            {
+                DataRow row = processData.Rows[0];
+                
+                // Set basic process info
+                textProccessBox.Text = row["num_process"].ToString();
+                textProccessBox.ReadOnly = true; // Prevent changing process number in edit mode
+                
+                // Get deceased information
+                string id = row["user_id"].ToString();
+                textIDNumberBox.Text = id;
+                
+                // Get personal details - you need to adjust field names based on your database structure
+                textFullNameBox.Text = db.GetDeceasedNameByProcessId(processId);
+                textSexBox.Text = row["sex"].ToString();
+                textMaritalStatusBox.Text = row["marital_status"].ToString();
+                textAddressBox.Text = row["residence"].ToString();
+                textNationalityBox.Text = row["nationality"].ToString();
+                textClientIDBox.Text = row["client_id"].ToString();
+                
+                // Set birthdate if available
+                if (row["birth_date"] != DBNull.Value)
+                    textBirthDateBox.Text = Convert.ToDateTime(row["birth_date"]).ToString("dd/MM/yyyy");
+                
+                // Set client information
+                textClientNameBox.Text = row["client_name"].ToString();
+                textRelationshipBox.Text = row["degree_kinship"].ToString();
+                textClientIDBox.Text = row["client_id"].ToString();
+                
+                // Set funeral details
+                textLocalBox.Text = row["location"].ToString();
+                if (row["funeral_date"] != DBNull.Value)
+                    textFuneralDateBox.Text = Convert.ToDateTime(row["funeral_date"]).ToString("dd/MM/yyyy");
+                
+                // Set combobox values - need to select the correct items
+                string funeralType = row["funeral_type"].ToString();
+                comboFuneralTypeBox.SelectedItem = funeralType;
+                
+                // Select the correct priest
+                string priestBi = row["priest_bi"].ToString();
+                SelectItemWithBi(comboPriestBox, priestBi);
+                
+                // Select church, coffin, and urn (if applicable)
+                int coffinId = 0;
+                if (funeralType == "Cremation" && row["cremation_coffin_id"] != DBNull.Value)
+                    coffinId = Convert.ToInt32(row["cremation_coffin_id"]);
+                else if (funeralType == "Burial" && row["burial_coffin_id"] != DBNull.Value)
+                    coffinId = Convert.ToInt32(row["burial_coffin_id"]);
 
-            // Example for funeral type:
-            // string funeralType = db.GetFuneralTypeByProcessId(processId);
-            // comboBox1.SelectedItem = funeralType;
-
-            // Example for priest:
-            // string priestBi = db.GetPriestBiByProcessId(processId);
-            // SelectItemWithBi(comboBox2, priestBi);
-
-            // Similar code for other comboboxes
+                int urnId = (row["urn_id"] != DBNull.Value) ? Convert.ToInt32(row["urn_id"]) : 0;
+                
+                // Load church - this requires improving your LoadChurches method to store IDs per item
+                for (int i = 0; i < comboCerimonyPlaceBox.Items.Count; i++)
+                {
+                    ComboboxItem item = comboCerimonyPlaceBox.Items[i] as ComboboxItem;
+                    if (item != null && item.Value == churchId.ToString())
+                    {
+                        comboCerimonyPlaceBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+                
+                // Select coffin from list
+                for (int i = 0; i < comboCoffinBox.Items.Count; i++)
+                {
+                    if (comboCoffinBox.Items[i].ToString().Contains($"ID: {coffinId}"))
+                    {
+                        comboCoffinBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+                
+                // Handle urn selection based on funeral type
+                if (funeralType == "Cremation" && urnId > 0)
+                {
+                    for (int i = 0; i < comboUrnBox.Items.Count; i++)
+                    {
+                        if (comboUrnBox.Items[i].ToString().Contains($"ID: {urnId}"))
+                        {
+                            comboUrnBox.SelectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Process not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // Helper method to select an item containing a specific value
@@ -225,15 +333,10 @@ namespace funeraria.Forms
 
         private string GetSelectedPriestBi()
         {
-            string priestSelection = comboPriestBox.SelectedItem?.ToString() ?? string.Empty;
-            if (!string.IsNullOrEmpty(priestSelection))
+            if (comboPriestBox.SelectedIndex >= 0)
             {
-                int startIndex = priestSelection.LastIndexOf("(") + 1;
-                int endIndex = priestSelection.LastIndexOf(")");
-                if (startIndex > 0 && endIndex > startIndex)
-                {
-                    return priestSelection.Substring(startIndex, endIndex - startIndex);
-                }
+                ComboboxItem selectedItem = comboPriestBox.SelectedItem as ComboboxItem;
+                return selectedItem?.Value ?? string.Empty;
             }
             return string.Empty;
         }
@@ -243,7 +346,8 @@ namespace funeraria.Forms
             // Retrieve the church ID from the Tag property
             if (comboCerimonyPlaceBox.SelectedIndex >= 0)
             {
-                return comboCerimonyPlaceBox.Tag?.ToString() ?? string.Empty;
+                ComboboxItem selectedItem = comboCerimonyPlaceBox.SelectedItem as ComboboxItem;
+                return selectedItem?.Value ?? string.Empty;
             }
             return string.Empty;
         }
@@ -299,9 +403,6 @@ namespace funeraria.Forms
             }
         }
 
-
-
-
         private void SaveButtonProcess_Click(object sender, EventArgs e)
         {
             try
@@ -325,14 +426,24 @@ namespace funeraria.Forms
                 // Get selected values from combo boxes
                 string funeralType = GetSelectedFuneralType();
                 string priestBi = GetSelectedPriestBi();
-                string churchId = GetSelectedChurchId();
-                string urnId = GetSelectedUrnId();
-                string coffinId = GetSelectedCoffinId();
 
                 // Get client and process info
                 string clientName = textClientNameBox.Text;
+                string clientId = textClientIDBox.Text;
                 string relationship = textRelationshipBox.Text;
                 string processNumber = textProccessBox.Text;
+
+                if (string.IsNullOrWhiteSpace(clientId))
+                {
+                    MessageBox.Show("Client ID cannot be empty.", 
+                                "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Fix the typo and convert all IDs to integers in one step
+                int churchId;
+                int urnId = 0; // Default to 0 for burial case
+                int coffinId;
 
                 // Get funeral information
                 DateTime funeralDate;
@@ -342,27 +453,8 @@ namespace funeraria.Forms
                                 "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                
-                // Handle urn ID based on funeral type
-                if (funeralType == "Cremation")
-                {
-                    urnId = GetSelectedUrnId();
-                    if (string.IsNullOrEmpty(urnId))
-                    {
-                        MessageBox.Show("Please select an urn for cremation.", 
-                                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                }
-
 
                 string local = textLocalBox.Text;
-
-
-                // Fix the typo and convert all IDs to integers in one step
-                int churchId;
-                int urnId = 0; // Default to 0 for burial case
-                int coffinId;
 
                 // Parse churchId - update GetSelectedChurchId() first
                 string churchIdStr = GetSelectedChurchId();
@@ -396,12 +488,21 @@ namespace funeraria.Forms
                 Database db = Database.GetDatabase();
                 bool success = false;
                 
-                if (db.ProcessExist(processNumber)) {
+                int procNumberInt;
+                if (!int.TryParse(processNumber, out procNumberInt))
+                {
+                    MessageBox.Show("Invalid process number format. Please enter a valid integer number.", 
+                                "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+
+                if (db.ProcessExists(procNumberInt)) {
                     MessageBox.Show("Process with this Number already exists.");
                     return;
                 } 
 
-                success = db.AddProcess(processNumber, fullName, bi, sex, local, funeralDate, relationship, clientName, coffinId, urnId, churchId, priestBi, funeralType, nationality, address, maritalStatus, birthDate);
+                success = db.AddProcess(processNumber, fullName, bi, sex, local, funeralDate, relationship, clientName, coffinId, urnId, churchId, priestBi, funeralType, nationality, address, maritalStatus, birthDate, clientId, numFunc);
                 MessageBox.Show(success ? "Process added successfully." : "Failed to add Process.");
                 
                 if (success)
@@ -418,14 +519,21 @@ namespace funeraria.Forms
 
         private void buttonChangeIcon_Click(object sender, EventArgs e)
         {
-            // Open file dialog to select an image
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            using (OpenFileDialog dlg = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                dlg.Title = "Open Image";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    // Load the selected image into the PictureBox
-                    pictureBoxIcon.Image = Image.FromFile(openFileDialog.FileName);
+                    try
+                    {
+                        pictureBox1.Image = new Bitmap(dlg.FileName);
+                        pictureBox1.Visible = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error loading image: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }

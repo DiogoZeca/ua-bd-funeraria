@@ -952,6 +952,8 @@ namespace funeraria.Entities
             }
         }
 
+
+
         //
         // FLORIST METHODS
         //
@@ -1089,16 +1091,56 @@ namespace funeraria.Entities
             }
         }
 
+
+
         //
         // PROCESS METHODS
         //
-
         public DataTable GetProcessById(int id)
         {
             using (SqlConnection connection = ConnectDB())
             {
                 connection.Open();
-                String command = "SELECT * FROM Process WHERE num_process = @processID";
+                String command = @"
+                                SELECT
+                                    p.user_id,
+                                    p.num_process,
+                                    p.degree_kinship,
+                                    p.client_id,
+                                    client_pe.name AS client_name,  -- aqui está!
+                                    d.sex,
+                                    d.marital_status,
+                                    d.residence,
+                                    d.nationality,
+                                    d.birth_date,
+                                    f.location,
+                                    f.funeral_date,
+                                    f.deceased_bi,
+                                    pe.name,
+                                    CASE
+                                        WHEN b.funeral_id IS NOT NULL THEN 'Burial'
+                                        WHEN cr.funeral_id IS NOT NULL THEN 'Cremation'
+                                        ELSE 'Unknown'
+                                    END AS funeral_type,
+                                    cr.coffin_id AS cremation_coffin_id,
+                                    cr.urn_id,
+                                    cr.crematory_id,
+                                    b.coffin_id AS burial_coffin_id,
+                                    b.cemetery_id,
+                                    f.church_id,
+                                    hav.priest_bi
+                                FROM Process p
+                                JOIN Funeral f ON p.num_process = f.num_process
+                                JOIN Church ch ON f.church_id = ch.id
+                                LEFT JOIN Have hav ON hav.church_id = ch.id
+                                JOIN Deceased d ON f.deceased_bi = d.person_bi
+                                JOIN Person pe ON d.person_bi = pe.bi
+                                LEFT JOIN Cremation cr ON f.num_process = cr.funeral_id
+                                LEFT JOIN Burial b ON f.num_process = b.funeral_id
+                                JOIN Client c ON p.client_id = c.client_bi
+                                JOIN Representative r ON c.client_bi = r.person_bi
+                                JOIN Person client_pe ON r.person_bi = client_pe.bi
+                                WHERE p.num_process = @processID";
                 using (SqlCommand cmd = new SqlCommand(command, connection))
                 {
                     cmd.Parameters.AddWithValue("@processID", id);
@@ -1132,12 +1174,12 @@ namespace funeraria.Entities
             }
         }
 
-        public bool ProccessExists( int ProcNumber )
+        public bool ProcessExists( int ProcNumber )
         {
             using (SqlConnection connection = ConnectDB())
             {
                 connection.Open();
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.findProcessExists(@ProcNumber)", connection))
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.findProcNumberExists(@ProcNumber)", connection))
                 {
                     cmd.Parameters.AddWithValue("@ProcNumber", ProcNumber);
                     object result = cmd.ExecuteScalar();
@@ -1150,9 +1192,67 @@ namespace funeraria.Entities
             }
         }
 
-        public bool AddProcess(string processNumber, string fullName, string bi, char sex, string local, DateTime funeralDate, string relationship, string clientName, string coffinId, int urnId, int churchId, string priestBi, string funeralType, string nationality, string address, string maritalStatus, DateTime birthDate) {
+        public bool AddProcess(string processNumber, string fullName, string bi, char sex, string local, DateTime funeralDate, string relationship, string clientName, int coffinId, int urnId, int churchId, string priestBi, string funeralType, string nationality, string address, string maritalStatus, DateTime birthDate, string clientBi, int numFunc) {
 
-            
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                SqlTransaction transaction = connection.BeginTransaction();
+
+                try
+                {
+                    using (SqlCommand command = new SqlCommand("sp_addProcess", connection, transaction))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.AddWithValue("@processNumber", int.Parse(processNumber));
+                        command.Parameters.AddWithValue("@fullName", fullName);
+                        command.Parameters.AddWithValue("@bi", bi);
+                        command.Parameters.AddWithValue("@sex", sex);
+                        command.Parameters.AddWithValue("@local", local);
+                        command.Parameters.AddWithValue("@funeralDate", funeralDate);
+                        command.Parameters.AddWithValue("@relationship", relationship);
+                        command.Parameters.AddWithValue("@clientName", clientName);
+                        command.Parameters.AddWithValue("@coffinId", coffinId);
+                        command.Parameters.AddWithValue("@urnId", urnId);
+                        command.Parameters.AddWithValue("@churchId", churchId);
+                        command.Parameters.AddWithValue("@priestBi", priestBi);
+                        command.Parameters.AddWithValue("@funeralType", funeralType);
+                        command.Parameters.AddWithValue("@nationality", nationality);
+                        command.Parameters.AddWithValue("@address", address);
+                        command.Parameters.AddWithValue("@maritalStatus", maritalStatus);
+                        command.Parameters.AddWithValue("@birthDate", birthDate);
+                        command.Parameters.AddWithValue("@startDate", DateTime.Now);
+                        command.Parameters.AddWithValue("@status", "Ativo");
+                        command.Parameters.AddWithValue("@budget", 0.00m);
+                        command.Parameters.AddWithValue("@description", "Funeral Process");
+                        command.Parameters.AddWithValue("@typeOfPayment", funeralType);
+                        command.Parameters.AddWithValue("@userId", numFunc); // ajustar conforme utilizador autenticado
+                        command.Parameters.AddWithValue("@clientId", clientBi); // usar bi como clientId (ajustar se necessário)
+
+                        command.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch (SqlException ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show("Erro SQL: " + ex.Message, "Erro ao adicionar processo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show("Erro: " + ex.Message, "Erro ao adicionar processo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
 
         }
 
@@ -1195,18 +1295,6 @@ namespace funeraria.Entities
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
         public String GetDeceasedNameByProcessId(decimal processId)
         {
             using (SqlConnection connection = ConnectDB())
@@ -1248,6 +1336,23 @@ namespace funeraria.Entities
 
                     object result = cmd.ExecuteScalar();
                     return result != null ? result.ToString() : null;
+                }
+            }
+        }
+
+        public int GetChurchIdForProcess(int processId)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                // This assumes you store the church ID somewhere when creating a process
+                // You may need to adjust this query based on your actual data model
+                String command = "SELECT church_id FROM Funeral WHERE num_process = @processId";
+                using (SqlCommand cmd = new SqlCommand(command, connection))
+                {
+                    cmd.Parameters.AddWithValue("@processId", processId);
+                    object result = cmd.ExecuteScalar();
+                    return result != null && result != DBNull.Value ? Convert.ToInt32(result) : 0;
                 }
             }
         }
