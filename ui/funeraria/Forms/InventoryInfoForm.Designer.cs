@@ -42,6 +42,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.textFlowerTypeBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.PictureBackClick = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBackClick)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -66,7 +68,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(491, 56);
+            this.label2.Location = new System.Drawing.Point(438, 56);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(157, 32);
             this.label2.TabIndex = 2;
@@ -75,9 +77,9 @@
             // textProductNumberIDBox
             // 
             this.textProductNumberIDBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textProductNumberIDBox.Location = new System.Drawing.Point(666, 53);
+            this.textProductNumberIDBox.Location = new System.Drawing.Point(615, 53);
             this.textProductNumberIDBox.Name = "textProductNumberIDBox";
-            this.textProductNumberIDBox.Size = new System.Drawing.Size(124, 38);
+            this.textProductNumberIDBox.Size = new System.Drawing.Size(175, 38);
             this.textProductNumberIDBox.TabIndex = 3;
             // 
             // textStockNumberBox
@@ -85,7 +87,7 @@
             this.textStockNumberBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textStockNumberBox.Location = new System.Drawing.Point(298, 141);
             this.textStockNumberBox.Name = "textStockNumberBox";
-            this.textStockNumberBox.Size = new System.Drawing.Size(124, 38);
+            this.textStockNumberBox.Size = new System.Drawing.Size(187, 38);
             this.textStockNumberBox.TabIndex = 5;
             // 
             // label3
@@ -103,7 +105,7 @@
             this.textProdPriceBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textProdPriceBox.Location = new System.Drawing.Point(298, 215);
             this.textProdPriceBox.Name = "textProdPriceBox";
-            this.textProdPriceBox.Size = new System.Drawing.Size(124, 38);
+            this.textProdPriceBox.Size = new System.Drawing.Size(187, 38);
             this.textProdPriceBox.TabIndex = 7;
             // 
             // label4
@@ -121,7 +123,7 @@
             this.textProdColorBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textProdColorBox.Location = new System.Drawing.Point(298, 293);
             this.textProdColorBox.Name = "textProdColorBox";
-            this.textProdColorBox.Size = new System.Drawing.Size(124, 38);
+            this.textProdColorBox.Size = new System.Drawing.Size(187, 38);
             this.textProdColorBox.TabIndex = 9;
             // 
             // label5
@@ -139,7 +141,7 @@
             this.textCoffinWeightBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textCoffinWeightBox.Location = new System.Drawing.Point(298, 371);
             this.textCoffinWeightBox.Name = "textCoffinWeightBox";
-            this.textCoffinWeightBox.Size = new System.Drawing.Size(124, 38);
+            this.textCoffinWeightBox.Size = new System.Drawing.Size(187, 38);
             this.textCoffinWeightBox.TabIndex = 11;
             // 
             // label6
@@ -155,7 +157,7 @@
             // textFlowerTypeBox
             // 
             this.textFlowerTypeBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textFlowerTypeBox.Location = new System.Drawing.Point(694, 371);
+            this.textFlowerTypeBox.Location = new System.Drawing.Point(745, 371);
             this.textFlowerTypeBox.Name = "textFlowerTypeBox";
             this.textFlowerTypeBox.Size = new System.Drawing.Size(200, 38);
             this.textFlowerTypeBox.TabIndex = 13;
@@ -164,17 +166,29 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(491, 374);
+            this.label7.Location = new System.Drawing.Point(542, 374);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(180, 32);
             this.label7.TabIndex = 12;
             this.label7.Text = "Flower Type";
             // 
-            // InventoryForm
+            // PictureBackClick
+            // 
+            this.PictureBackClick.Image = global::funeraria.Properties.Resources.arrow;
+            this.PictureBackClick.Location = new System.Drawing.Point(880, 53);
+            this.PictureBackClick.Name = "PictureBackClick";
+            this.PictureBackClick.Size = new System.Drawing.Size(84, 73);
+            this.PictureBackClick.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PictureBackClick.TabIndex = 14;
+            this.PictureBackClick.TabStop = false;
+            // 
+            // InventoryInfoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(216)))));
             this.ClientSize = new System.Drawing.Size(1043, 546);
+            this.Controls.Add(this.PictureBackClick);
             this.Controls.Add(this.textFlowerTypeBox);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.textCoffinWeightBox);
@@ -189,8 +203,9 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.ProductType);
             this.Controls.Add(this.label1);
-            this.Name = "InventoryForm";
+            this.Name = "InventoryInfoForm";
             this.Text = "InventoryForm";
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBackClick)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -212,5 +227,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textFlowerTypeBox;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.PictureBox PictureBackClick;
     }
 }

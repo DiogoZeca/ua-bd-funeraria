@@ -56,12 +56,12 @@ INSERT INTO dbo.Church (name, location) VALUES
 ('Capela Norte', 'Porto'),
 ('Igreja São João', 'Coimbra');
 
-INSERT INTO dbo.Funeral (num_process, funeral_date, location, deceased_bi, church_id) VALUES
-(1001, '2024-01-15', 'Igreja Central', '678901236', 1),
-(1002, '2024-02-20', 'Capela Norte', '789012347', 2),
-(1003, '2024-03-25', 'Igreja São João', '890123458', 3),
-(1004, '2024-04-05', 'Capela Nova', '901234569', 1),
-(1005, '2024-04-15', 'Igreja Matriz', '012345670', 2);
+INSERT INTO dbo.Funeral (num_process, funeral_date, location, deceased_bi, church_id, priest_bi) VALUES
+(1001, '2024-01-15', 'Igreja Central', '678901236', 1, '123456781'),
+(1002, '2024-02-20', 'Capela Norte', '789012347', 2, '234567892'),
+(1003, '2024-03-25', 'Igreja São João', '890123458', 3, '345678903'),
+(1004, '2024-04-05', 'Capela Nova', '901234569', 1, '123456781'),
+(1005, '2024-04-15', 'Igreja Matriz', '012345670', 2, '234567892');
 
 INSERT INTO dbo.Have (priest_bi, church_id) VALUES
 ('123456781', 1),

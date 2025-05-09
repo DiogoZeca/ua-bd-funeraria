@@ -10,7 +10,10 @@ DROP PROCEDURE IF EXISTS sp_updateChurch;
 DROP PROCEDURE IF EXISTS sp_updateCrematory;
 DROP PROCEDURE IF EXISTS sp_updateUser;
 DROP PROCEDURE IF EXISTS sp_addProcess;
+DROP PROCEDURE IF EXISTS sp_DeleteProcess;
+DROP PROCEDURE IF EXISTS sp_UpdateFuneralBudgets;
 GO
+
 
 CREATE PROCEDURE AuthenticateUser
     @Username VARCHAR(100),
@@ -380,7 +383,10 @@ CREATE PROCEDURE sp_addProcess
     @description TEXT,
     @typeOfPayment VARCHAR(50),
     @userId INT,
-    @clientId VARCHAR(50)
+    @clientId VARCHAR(50),
+    @Cemetery_ID INT,
+    @Crematory_ID INT,
+    @Num_grave INT
 AS
 BEGIN
     BEGIN TRY
@@ -413,10 +419,10 @@ BEGIN
 
         -- Funeral
         INSERT INTO dbo.Funeral (
-            num_process, funeral_date, location, deceased_bi, church_id
+            num_process, funeral_date, location, deceased_bi, church_id, priest_bi
         )
         VALUES (
-            @processNumber, @funeralDate, @local, @bi, @churchId
+            @processNumber, @funeralDate, @local, @bi, @churchId, @priestBi
         );
 
         -- Have
@@ -436,7 +442,7 @@ BEGIN
         ELSE IF LOWER(@funeralType) = 'burial'
         BEGIN
             INSERT INTO dbo.Burial (funeral_id, cemetery_id, coffin_id, num_grave)
-            VALUES (@processNumber, NULL, @coffinId, NULL);
+            VALUES (@processNumber, @Cemetery_ID, @coffinId, @Num_grave);
         END
 
         COMMIT;
@@ -444,6 +450,158 @@ BEGIN
     BEGIN CATCH
         ROLLBACK;
         THROW;
+    END CATCH
+END;
+GO
+
+CREATE PROCEDURE sp_UpdateFuneralBudgets
+AS
+BEGIN
+    DECLARE @process_id INT,
+            @cemetery_price DECIMAL(10,2),
+            @crematory_price DECIMAL(10,2),
+            @priest_price DECIMAL(10,2),
+            @container_price DECIMAL(10,2),
+            @flower_price DECIMAL(10,2),
+            @total_price DECIMAL(10,2);
+
+    DECLARE funeral_cursor CURSOR FOR
+        SELECT num_process FROM Funeral;
+
+    OPEN funeral_cursor;
+    FETCH NEXT FROM funeral_cursor INTO @process_id;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+
+        -- Preço do cemitério
+        SELECT @cemetery_price = c.price
+        FROM Cemetery c
+        JOIN Burial b ON b.cemetery_id = c.id
+        WHERE b.funeral_id = @process_id;
+
+        -- Preço do cemitério
+        SELECT @crematory_price = c.price
+        FROM Crematory c
+        JOIN Cremation b ON b.crematory_id = c.id
+        WHERE b.funeral_id = @process_id;
+
+        -- Inicializar
+        SET @container_price = 0;
+
+        -- Se for funeral com enterro
+        SELECT @container_price = p.price
+        FROM Burial b
+        JOIN Coffin cf ON cf.id = b.coffin_id
+        JOIN Products p ON p.id = cf.id
+        WHERE b.funeral_id = @process_id;
+
+        -- Se for cremação: soma o caixão + urna
+        IF EXISTS (SELECT 1 FROM Cremation WHERE funeral_id = @process_id)
+        BEGIN
+            DECLARE @cremation_coffin_price DECIMAL(10,2) = 0;
+            DECLARE @urn_price DECIMAL(10,2) = 0;
+
+            SELECT @cremation_coffin_price = p.price
+            FROM Cremation c
+            JOIN Coffin cf ON cf.id = c.coffin_id
+            JOIN Products p ON p.id = cf.id
+            WHERE c.funeral_id = @process_id;
+
+            SELECT @urn_price = p.price
+            FROM Cremation c
+            JOIN Urn u ON u.id = c.urn_id
+            JOIN Products p ON p.id = u.id
+            WHERE c.funeral_id = @process_id;
+
+            SET @container_price = ISNULL(@cremation_coffin_price, 0) + ISNULL(@urn_price, 0);
+        END;
+
+        -- Preço das flores: Produtos ligados à tabela Flowers
+        SELECT @flower_price = SUM(p.price * f.quantity)
+        FROM Flowers f
+        JOIN Products p ON p.id = f.id
+        WHERE f.process_num = @process_id;
+
+        -- Preço do padre
+        SELECT @priest_price = p.price
+        FROM Funeral f
+        JOIN Priest p ON p.representative_bi = f.priest_bi
+        WHERE f.num_process = @process_id;
+
+
+        -- Soma total
+        SET @total_price = ISNULL(@cemetery_price, 0) +
+                           ISNULL(@crematory_price, 0) +
+                           ISNULL(@container_price, 0) +
+                           ISNULL(@flower_price, 0) +
+                           ISNULL(@priest_price, 0);
+
+        -- DEBUG OUTPUT
+        PRINT 'PROCESS ID: ' + CAST(@process_id AS VARCHAR);
+        PRINT 'Cemetery Price: ' + CAST(ISNULL(@cemetery_price, 0) AS VARCHAR);
+        PRINT 'Crematory Price: ' + CAST(ISNULL(@crematory_price, 0) AS VARCHAR);
+        PRINT 'Container Price: ' + CAST(ISNULL(@container_price, 0) AS VARCHAR);
+        PRINT 'Flower Price: ' + CAST(ISNULL(@flower_price, 0) AS VARCHAR);
+        PRINT 'Priest Price: ' + CAST(ISNULL(@priest_price, 0) AS VARCHAR);
+        PRINT 'TOTAL: ' + CAST(@total_price AS VARCHAR);
+        PRINT '------------------------------------';
+
+        -- Atualiza o campo budget no processo
+        UPDATE Process
+        SET budget = @total_price
+        WHERE num_process = @process_id;
+
+        FETCH NEXT FROM funeral_cursor INTO @process_id;
+    END;
+
+    CLOSE funeral_cursor;
+    DEALLOCATE funeral_cursor;
+END;
+GO
+
+CREATE PROCEDURE sp_DeleteProcess
+    @processId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        
+        -- Delete from Flowers first (references Process directly)
+        DELETE FROM dbo.Flowers 
+        WHERE process_num = @processId;
+        
+        -- Delete from Cremation (relies on Funeral)
+        DELETE FROM dbo.Cremation 
+        WHERE funeral_id = @processId;
+        
+        -- Delete from Burial (relies on Funeral)
+        DELETE FROM dbo.Burial 
+        WHERE funeral_id = @processId;
+        
+        -- Delete from Funeral
+        DELETE FROM dbo.Funeral 
+        WHERE num_process = @processId;
+        
+        -- Finally delete from Process table
+        DELETE FROM dbo.Process 
+        WHERE num_process = @processId;
+        
+        COMMIT TRANSACTION;
+        RETURN 1; -- Success
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+            
+        -- Return the error information
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+        DECLARE @ErrorState INT = ERROR_STATE();
+        
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
+        RETURN -1; -- Failure
     END CATCH
 END;
 GO

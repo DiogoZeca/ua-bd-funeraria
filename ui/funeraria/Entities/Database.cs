@@ -1174,7 +1174,7 @@ namespace funeraria.Entities
                 }
             }
         }
-        public bool AddProcess(string processNumber, string fullName, string bi, char sex, string local, DateTime funeralDate, string relationship, string clientName, int coffinId, int urnId, int churchId, string priestBi, string funeralType, string nationality, string address, string maritalStatus, DateTime birthDate, string clientBi, int numFunc, byte[] img) {
+        public bool AddProcess(string processNumber, string fullName, string bi, char sex, string local, DateTime funeralDate, string relationship, string clientName, int coffinId, int urnId, int churchId, string priestBi, string funeralType, string nationality, string address, string maritalStatus, DateTime birthDate, string clientBi, int numFunc, byte[] img, int numGrave, int crematoryId, int cemeteryId) {
 
             using (SqlConnection connection = ConnectDB())
             {
@@ -1212,6 +1212,9 @@ namespace funeraria.Entities
                         command.Parameters.AddWithValue("@typeOfPayment", funeralType);
                         command.Parameters.AddWithValue("@userId", numFunc); // ajustar conforme utilizador autenticado
                         command.Parameters.AddWithValue("@clientId", clientBi); // usar bi como clientId (ajustar se necessário)
+                        command.Parameters.AddWithValue("@Cemetery_ID", cemeteryId); 
+                        command.Parameters.AddWithValue("@Crematory_ID", crematoryId); // usar bi como clientId (ajustar se necessário) 
+                        command.Parameters.AddWithValue("@Num_grave", numGrave); // usar bi como clientId (ajustar se necessário)  
 
                         command.ExecuteNonQuery();
                     }
@@ -1239,7 +1242,38 @@ namespace funeraria.Entities
 
         }
 
-
+        public bool DeleteProcess(int processId)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                using (SqlCommand cmd = new SqlCommand("sp_DeleteProcess", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@processId", processId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                }
+            }
+            return true;
+        }
+        public void UpdateProcessBudget() {
+            using (SqlConnection conn = ConnectDB())
+            {
+                conn.InfoMessage += (sender, e) =>
+                {
+                    foreach (SqlError info in e.Errors)
+                    {
+                        Console.WriteLine("Mensagem SQL: " + info.Message);
+                    }
+                };
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("sp_UpdateFuneralBudgets", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.ExecuteNonQuery(); 
+                }
+            }
+        }
 
         //
         // PRODUCT METHODS
@@ -1303,10 +1337,10 @@ namespace funeraria.Entities
             {
                 connection.Open();
                 string command = @"
-                    SELECT c.size, co.color 
-                    FROM project.Products p
-                    JOIN project.Container c ON p.id = c.id
-                    JOIN project.Coffin co ON c.id = co.id
+                    SELECT c.size, co.color, co.weight
+                    FROM dbo.Products p
+                    JOIN dbo.Container c ON p.id = c.id
+                    JOIN dbo.Coffin co ON c.id = co.id
                     WHERE p.id = @productId";
                     
                 using (SqlCommand cmd = new SqlCommand(command, connection))
@@ -1329,9 +1363,9 @@ namespace funeraria.Entities
                 connection.Open();
                 string command = @"
                     SELECT c.size
-                    FROM project.Products p
-                    JOIN project.Container c ON p.id = c.id
-                    JOIN project.Urn u ON c.id = u.id
+                    FROM dbo.Products p
+                    JOIN dbo.Container c ON p.id = c.id
+                    JOIN dbo.Urn u ON c.id = u.id
                     WHERE p.id = @productId";
                     
                 using (SqlCommand cmd = new SqlCommand(command, connection))
@@ -1354,8 +1388,8 @@ namespace funeraria.Entities
                 connection.Open();
                 string command = @"
                     SELECT f.type, f.color
-                    FROM project.Products p
-                    JOIN project.Flowers f ON p.id = f.id
+                    FROM dbo.Products p
+                    JOIN dbo.Flowers f ON p.id = f.id
                     WHERE p.id = @productId";
                     
                 using (SqlCommand cmd = new SqlCommand(command, connection))
@@ -1374,9 +1408,9 @@ namespace funeraria.Entities
 
 
 
-
-
-
+        //
+        // FUNERAL METHODS
+        //
         public String GetDeceasedNameByProcessId(decimal processId)
         {
             using (SqlConnection connection = ConnectDB())

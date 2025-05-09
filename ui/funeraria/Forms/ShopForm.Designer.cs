@@ -97,6 +97,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(216)))));
             this.ClientSize = new System.Drawing.Size(702, 278);
             this.Controls.Add(this.BuyButtonClick);
             this.Controls.Add(this.PictureBackClick);

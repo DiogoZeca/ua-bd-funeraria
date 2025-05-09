@@ -40,6 +40,10 @@ namespace funeraria.Forms
 
             // Funeral Type ComboBox event handler
             comboFuneralTypeBox.SelectedIndexChanged += ComboFuneralTypeBox_SelectedIndexChanged;
+            
+            // Make sure the trash icon click event is properly hooked up
+            if (PictureTrashClick != null)
+                PictureTrashClick.Click += PictureTrashClick_Click;
         }
 
         private void SetAllFieldsReadOnly(bool readOnly)
@@ -67,17 +71,10 @@ namespace funeraria.Forms
             comboCerimonyPlaceBox.Enabled = !readOnly;
             comboUrnBox.Enabled = !readOnly;
             comboCoffinBox.Enabled = !readOnly;
+            comboCemeteryBox.Enabled = !readOnly;
+            comboCrematoryBox.Enabled = !readOnly;
         }
 
-        private void PictureTrashClick_Click(object sender, EventArgs e)
-        {
-            var result = MessageBox.Show("Tem a certeza que deseja eliminar este processo?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (result == DialogResult.Yes)
-            {
-                // Database.DeleteProcess(id); // Make sure this method exists in your Database class
-                this.Close();
-            }
-        }
 
         private void PictureBackClick_Click(object sender, EventArgs e)
         {
@@ -152,6 +149,12 @@ namespace funeraria.Forms
 
             // Load coffins
             LoadCoffins();
+
+            // Load cemetery
+            LoadCemeteries();
+
+            // Load crematories
+            LoadCrematories();
         }
 
         private void LoadFuneralTypes()
@@ -253,6 +256,57 @@ namespace funeraria.Forms
             }
         }
 
+        private void LoadCemeteries()
+        {
+            Database db = Database.GetDatabase();
+            comboCemeteryBox.Items.Clear();
+
+            DataTable cemeteries = db.GetAllCemeteryList();
+            foreach (DataRow row in cemeteries.Rows)
+            {
+                string cemeteryId = row["id"].ToString();
+                string cemeteryLocation = row["location"].ToString();
+                string cemeteryContact = row["contact"].ToString();
+                decimal cemeteryPrice = Convert.ToDecimal(row["price"]);
+                
+                // Create a custom item class to store both display text and ID
+                ComboboxItem item = new ComboboxItem
+                {
+                    Text = $"{cemeteryLocation} - ${cemeteryPrice} (ID: {cemeteryId})",
+                    Value = cemeteryId
+                };
+                
+                comboCemeteryBox.Items.Add(item);
+            }
+        }
+
+        private void LoadCrematories()
+        {
+            Database db = Database.GetDatabase();
+            comboCrematoryBox.Items.Clear();
+
+            DataTable crematories = db.GetAllCrematoryList();
+            foreach (DataRow row in crematories.Rows)
+            {
+                string crematoryId = row["id"].ToString();
+                string crematoryLocation = row["location"].ToString();
+                string crematoryContact = row["contact"].ToString();
+                decimal crematoryPrice = Convert.ToDecimal(row["price"]);
+                
+                // Create a custom item class to store both display text and ID
+                ComboboxItem item = new ComboboxItem
+                {
+                    Text = $"{crematoryLocation} - ${crematoryPrice} (ID: {crematoryId})",
+                    Value = crematoryId
+                };
+                
+                comboCrematoryBox.Items.Add(item);
+            }
+        }
+
+
+
+
         private void LoadProcessData(int processId)
         {
             Database db = Database.GetDatabase();
@@ -283,6 +337,46 @@ namespace funeraria.Forms
                     }
                 }
 
+                string funeralType = row["funeral_type"].ToString();
+                comboFuneralTypeBox.SelectedItem = funeralType;
+
+                // Select cemetery if it's a burial
+                 if (funeralType == "Burial" && row["cemetery_id"] != DBNull.Value)
+                {
+                    int cemeteryId = Convert.ToInt32(row["cemetery_id"]);
+                    for (int i = 0; i < comboCemeteryBox.Items.Count; i++)
+                    {
+                        ComboboxItem item = comboCemeteryBox.Items[i] as ComboboxItem;
+                        if (item != null && item.Value == cemeteryId.ToString())
+                        {
+                            comboCemeteryBox.SelectedIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    MessageBox.Show(row["num_grave"].ToString());
+                    // Set grave number if available
+                    if (row["num_grave"] != DBNull.Value)
+                        textGraveNumberBox.Text = row["num_grave"].ToString();
+                }
+                // Select crematory if it's a cremation
+                else if (funeralType == "Cremation" && row["crematory_id"] != DBNull.Value)
+                {
+                    int crematoryId = Convert.ToInt32(row["crematory_id"]);
+                    for (int i = 0; i < comboCrematoryBox.Items.Count; i++)
+                    {
+                        ComboboxItem item = comboCrematoryBox.Items[i] as ComboboxItem;
+                        if (item != null && item.Value == crematoryId.ToString())
+                        {
+                            comboCrematoryBox.SelectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // Ensure the funeral type change logic is applied (enable/disable appropriate fields)
+                ComboFuneralTypeBox_SelectedIndexChanged(comboFuneralTypeBox, EventArgs.Empty);
+
                 
                 // Set basic process info
                 textProccessBox.Text = row["num_process"].ToString();
@@ -297,7 +391,6 @@ namespace funeraria.Forms
                 textMaritalStatusBox.Text = row["marital_status"].ToString();
                 textAddressBox.Text = row["residence"].ToString();
                 textNationalityBox.Text = row["nationality"].ToString();
-                textClientIDBox.Text = row["client_id"].ToString();
                 
                 // Set birthdate if available
                 if (row["birth_date"] != DBNull.Value)
@@ -314,7 +407,7 @@ namespace funeraria.Forms
                     textFuneralDateBox.Text = Convert.ToDateTime(row["funeral_date"]).ToString("dd/MM/yyyy");
                 
                 // Set combobox values - need to select the correct items
-                string funeralType = row["funeral_type"].ToString();
+                
                 comboFuneralTypeBox.SelectedItem = funeralType;
                 
                 // Select the correct priest
@@ -333,8 +426,7 @@ namespace funeraria.Forms
                 // Load church - this requires improving your LoadChurches method to store IDs per item
                 for (int i = 0; i < comboCerimonyPlaceBox.Items.Count; i++)
                 {
-                    ComboboxItem item = comboCerimonyPlaceBox.Items[i] as ComboboxItem;
-                    if (item != null && item.Value == churchId.ToString())
+                    if (comboCerimonyPlaceBox.Items[i].ToString().Contains($"ID: {churchId}"))
                     {
                         comboCerimonyPlaceBox.SelectedIndex = i;
                         break;
@@ -440,27 +532,86 @@ namespace funeraria.Forms
             return string.Empty;
         }
 
+        private string GetSelectedCemeteryId()
+        {
+            if (comboCemeteryBox.SelectedIndex >= 0)
+            {
+                ComboboxItem selectedItem = comboCemeteryBox.SelectedItem as ComboboxItem;
+                return selectedItem?.Value ?? string.Empty;
+            }
+            return string.Empty;
+        }
+
+        private string GetSelectedCrematoryId()
+        {
+            if (comboCrematoryBox.SelectedIndex >= 0)
+            {
+                ComboboxItem selectedItem = comboCrematoryBox.SelectedItem as ComboboxItem;
+                return selectedItem?.Value ?? string.Empty;
+            }
+            return string.Empty;
+        }
+
+
+
+
 
         private void ComboFuneralTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Get whether the form is in read-only mode
+            bool isReadOnly = !SaveButtonProcess.Visible;
+            
             // Check which funeral type is selected
             if (comboFuneralTypeBox.SelectedItem?.ToString() == "Burial")
             {
-                // If Burial is selected, disable Urn selection
-                comboUrnBox.Enabled = false;
-                comboUrnBox.SelectedIndex = -1; // Clear any existing selection
-                
-                // Optionally add a placeholder text
-                comboUrnBox.Text = "Not applicable for burial";
+                if (!isReadOnly)
+                {
+                    // If Burial is selected and not in read-only mode, disable Urn selection and Crematory selection
+                    comboUrnBox.Enabled = false;
+                    comboUrnBox.SelectedIndex = -1;
+                    comboUrnBox.Text = "Not applicable for burial";
+                    
+                    comboCrematoryBox.Enabled = false;
+                    comboCrematoryBox.SelectedIndex = -1;
+                    comboCrematoryBox.Text = "Not applicable for burial";
+                    
+                    textGraveNumberBox.Enabled = true;
+                    textGraveNumberBox.Text = "";
+                    
+                }
+                else
+                {
+                    // In read-only mode keep displaying all values
+                    comboUrnBox.Enabled = false;
+                    comboCrematoryBox.Enabled = false;
+                    comboCemeteryBox.Enabled = false;
+                    textGraveNumberBox.Enabled = false;
+                }
             }
             else // "Cremation" is selected
             {
-                // If Cremation is selected, enable Urn selection
-                comboUrnBox.Enabled = true;
-                comboUrnBox.Text = "";
+                if (!isReadOnly)
+                {
+                    // If Cremation is selected and not in read-only mode, enable Urn and Crematory selection
+                    comboUrnBox.Enabled = true;
+                    comboUrnBox.Text = "";
+                    
+                    comboCrematoryBox.Enabled = true;
+                    comboCrematoryBox.Text = "";
+                    
+                    // Enable Cemetery selection for cremation as well
+                    comboCemeteryBox.Enabled = true;
+                    comboCemeteryBox.Text = "";
+                }
+                else
+                {
+                    // In read-only mode keep displaying all values
+                    comboUrnBox.Enabled = false;
+                    comboCrematoryBox.Enabled = false;
+                    comboCemeteryBox.Enabled = false;
+                }
             }
         }
-
         private void SaveButtonProcess_Click(object sender, EventArgs e)
         {
             try
@@ -492,6 +643,34 @@ namespace funeraria.Forms
                 string clientId = textClientIDBox.Text;
                 string relationship = textRelationshipBox.Text;
                 string processNumber = textProccessBox.Text;
+                int numGrave = textGraveNumberBox.Text != "" ? Convert.ToInt32(textGraveNumberBox.Text) : 0;
+
+                int crematoryId = 0; // Default to 0 for burial case
+                if (funeralType == "Cremation")
+                {
+                    string crematoryIdStr = GetSelectedCrematoryId();
+                    if (!int.TryParse(crematoryIdStr, out crematoryId))
+                    {
+                        MessageBox.Show("Invalid crematory selection for cremation.");
+                        return;
+                    }
+                    MessageBox.Show($"Crematory ID: {crematoryId}");
+                }
+
+                int cemeteryId = 0; // Default to 0 for burial case
+                if (funeralType == "Burial")
+                {
+                    string cemeteryIdStr = GetSelectedCemeteryId();
+                    if (!int.TryParse(cemeteryIdStr, out cemeteryId))
+                    {
+                        MessageBox.Show("Invalid crematory selection for cremation.");
+                        return;
+                    }
+                    MessageBox.Show($"cemetery ID: {cemeteryId}");
+                }
+
+
+
 
                 if (string.IsNullOrWhiteSpace(clientId))
                 {
@@ -506,7 +685,7 @@ namespace funeraria.Forms
                     img = ms.ToArray();
                 }
 
-                // Fix the typo and convert all IDs to integers in one step
+                // Fix the typo and convert all IDs to integers in one st   ep
                 int churchId;
                 int urnId = 0; // Default to 0 for burial case
                 int coffinId;
@@ -568,8 +747,9 @@ namespace funeraria.Forms
                     return;
                 } 
 
-                success = db.AddProcess(processNumber, fullName, bi, sex, local, funeralDate, relationship, clientName, coffinId, urnId, churchId, priestBi, funeralType, nationality, address, maritalStatus, birthDate, clientId, numFunc, img);
+                success = db.AddProcess(processNumber, fullName, bi, sex, local, funeralDate, relationship, clientName, coffinId, urnId, churchId, priestBi, funeralType, nationality, address, maritalStatus, birthDate, clientId, numFunc, img, numGrave, crematoryId, cemeteryId);
                 MessageBox.Show(success ? "Process added successfully." : "Failed to add Process.");
+                db.UpdateProcessBudget();
                 
                 if (success)
                 {
@@ -600,6 +780,25 @@ namespace funeraria.Forms
                     {
                         MessageBox.Show($"Error loading image: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+            }
+        }
+
+        private void PictureTrashClick_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show("Tem a certeza que deseja eliminar este processo?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                Database db = Database.GetDatabase();
+                bool deleted = db.DeleteProcess(id);
+                if (deleted)
+                {
+                    MessageBox.Show("Processo eliminado com sucesso.", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Não foi possível eliminar o processo.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

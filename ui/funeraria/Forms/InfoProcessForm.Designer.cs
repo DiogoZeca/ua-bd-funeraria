@@ -76,6 +76,10 @@
             this.PictureBackClick = new System.Windows.Forms.PictureBox();
             this.PictureTrashClick = new System.Windows.Forms.PictureBox();
             this.PicDeceased = new System.Windows.Forms.PictureBox();
+            this.comboCemeteryBox = new System.Windows.Forms.ComboBox();
+            this.comboCrematoryBox = new System.Windows.Forms.ComboBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBackClick)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureTrashClick)).BeginInit();
@@ -122,6 +126,10 @@
             // 
             this.panel1.AllowDrop = true;
             this.panel1.AutoScroll = true;
+            this.panel1.Controls.Add(this.comboCemeteryBox);
+            this.panel1.Controls.Add(this.comboCrematoryBox);
+            this.panel1.Controls.Add(this.label23);
+            this.panel1.Controls.Add(this.label24);
             this.panel1.Controls.Add(this.textClientIDBox);
             this.panel1.Controls.Add(this.label22);
             this.panel1.Controls.Add(this.comboCoffinBox);
@@ -169,7 +177,7 @@
             // textClientIDBox
             // 
             this.textClientIDBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textClientIDBox.Location = new System.Drawing.Point(182, 956);
+            this.textClientIDBox.Location = new System.Drawing.Point(182, 997);
             this.textClientIDBox.Name = "textClientIDBox";
             this.textClientIDBox.Size = new System.Drawing.Size(283, 30);
             this.textClientIDBox.TabIndex = 53;
@@ -178,7 +186,7 @@
             // 
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(70, 959);
+            this.label22.Location = new System.Drawing.Point(70, 1000);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(92, 25);
             this.label22.TabIndex = 52;
@@ -270,7 +278,7 @@
             // textClientNameBox
             // 
             this.textClientNameBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textClientNameBox.Location = new System.Drawing.Point(182, 903);
+            this.textClientNameBox.Location = new System.Drawing.Point(182, 944);
             this.textClientNameBox.Name = "textClientNameBox";
             this.textClientNameBox.Size = new System.Drawing.Size(795, 30);
             this.textClientNameBox.TabIndex = 38;
@@ -279,7 +287,7 @@
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(32, 906);
+            this.label16.Location = new System.Drawing.Point(32, 947);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(130, 25);
             this.label16.TabIndex = 37;
@@ -288,7 +296,7 @@
             // textRelationshipBox
             // 
             this.textRelationshipBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textRelationshipBox.Location = new System.Drawing.Point(665, 953);
+            this.textRelationshipBox.Location = new System.Drawing.Point(665, 994);
             this.textRelationshipBox.Name = "textRelationshipBox";
             this.textRelationshipBox.Size = new System.Drawing.Size(312, 30);
             this.textRelationshipBox.TabIndex = 36;
@@ -297,7 +305,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(508, 956);
+            this.label17.Location = new System.Drawing.Point(508, 997);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(130, 25);
             this.label17.TabIndex = 35;
@@ -568,6 +576,42 @@
             this.PicDeceased.TabIndex = 0;
             this.PicDeceased.TabStop = false;
             // 
+            // comboCemeteryBox
+            // 
+            this.comboCemeteryBox.FormattingEnabled = true;
+            this.comboCemeteryBox.Location = new System.Drawing.Point(665, 899);
+            this.comboCemeteryBox.Name = "comboCemeteryBox";
+            this.comboCemeteryBox.Size = new System.Drawing.Size(312, 24);
+            this.comboCemeteryBox.TabIndex = 57;
+            // 
+            // comboCrematoryBox
+            // 
+            this.comboCrematoryBox.FormattingEnabled = true;
+            this.comboCrematoryBox.Location = new System.Drawing.Point(182, 899);
+            this.comboCrematoryBox.Name = "comboCrematoryBox";
+            this.comboCrematoryBox.Size = new System.Drawing.Size(283, 24);
+            this.comboCrematoryBox.TabIndex = 56;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label23.Location = new System.Drawing.Point(50, 895);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(112, 25);
+            this.label23.TabIndex = 55;
+            this.label23.Text = "Crematory";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label24.Location = new System.Drawing.Point(542, 895);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(105, 25);
+            this.label24.TabIndex = 54;
+            this.label24.Text = "Cemetery";
+            // 
             // InfoProcessForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -649,5 +693,9 @@
         private System.Windows.Forms.Button buttonChangeIcon;
         private System.Windows.Forms.TextBox textClientIDBox;
         private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.ComboBox comboCemeteryBox;
+        private System.Windows.Forms.ComboBox comboCrematoryBox;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label label24;
     }
 }

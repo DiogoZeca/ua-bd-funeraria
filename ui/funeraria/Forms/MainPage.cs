@@ -184,6 +184,12 @@ namespace funeraria.Forms
                 HeaderText = "Local"
             });
 
+            dataGridProcess.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Budget",
+                HeaderText = "FUNERAL COST (€)"
+            });
+
             dataGridProcess.DataSource = dt;
 
             foreach (DataGridViewRow row in dataGridProcess.Rows)

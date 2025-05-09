@@ -2,6 +2,8 @@
 DROP TRIGGER IF EXISTS trg_UpdateProductStock_Cremation;
 DROP TRIGGER IF EXISTS trg_UpdateProductStock_Burial;
 GO
+DROP TRIGGER IF EXISTS trg_DeleteProcess;
+GO
 
 -- SQLBook: Code
 CREATE TRIGGER trg_UpdateProductStock_Cremation
@@ -56,5 +58,38 @@ BEGIN
     END
 
     UPDATE dbo.Products SET stock = stock - 1 WHERE id = @coffinId;
+END;
+GO
+
+CREATE TRIGGER trg_DeleteProcess
+ON dbo.Process
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Get the process IDs that are being deleted
+    DECLARE @deletedProcesses TABLE (process_id INT);
+    INSERT INTO @deletedProcesses SELECT num_process FROM deleted;
+    
+    -- Delete from Flowers first (references Process directly)
+    DELETE FROM dbo.Flowers 
+    WHERE process_num IN (SELECT process_id FROM @deletedProcesses);
+    
+    -- Delete from Cremation (relies on Funeral)
+    DELETE FROM dbo.Cremation 
+    WHERE funeral_id IN (SELECT process_id FROM @deletedProcesses);
+    
+    -- Delete from Burial (relies on Funeral)
+    DELETE FROM dbo.Burial 
+    WHERE funeral_id IN (SELECT process_id FROM @deletedProcesses);
+    
+    -- Delete from Funeral
+    DELETE FROM dbo.Funeral 
+    WHERE num_process IN (SELECT process_id FROM @deletedProcesses);
+    
+    -- Finally delete from Process table
+    DELETE FROM dbo.Process 
+    WHERE num_process IN (SELECT process_id FROM @deletedProcesses);
 END;
 GO

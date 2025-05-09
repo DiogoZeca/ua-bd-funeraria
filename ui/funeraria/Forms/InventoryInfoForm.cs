@@ -17,11 +17,31 @@ namespace funeraria.Forms
             
             // Set up event handlers
             this.Load += InventoryInfoForm_Load;
+            this.PictureBackClick.Click += PictureBackClick_Click;
+
+            // Make all TextBoxes read-only
+            MakeTextBoxesReadOnly();
+        }
+
+        private void MakeTextBoxesReadOnly()
+        {
+            // Set all TextBoxes to read-only
+            textProductNumberIDBox.ReadOnly = true;
+            textStockNumberBox.ReadOnly = true;
+            textProdPriceBox.ReadOnly = true;
+            textProdColorBox.ReadOnly = true;
+            textCoffinWeightBox.ReadOnly = true;
+            textFlowerTypeBox.ReadOnly = true;
         }
 
         private void InventoryInfoForm_Load(object sender, EventArgs e)
         {
             LoadProductData();
+        }
+
+        private void PictureBackClick_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
         
         private void LoadProductData()
@@ -79,9 +99,10 @@ namespace funeraria.Forms
                         label5.Visible = true;
                         textCoffinWeightBox.Visible = true;
                         label6.Visible = true;
+                        label6.Text = "Coffin Weight";
                         
                         textProdColorBox.Text = coffinDetails.Rows[0]["color"].ToString();
-                        textCoffinWeightBox.Text = coffinDetails.Rows[0]["size"].ToString();
+                        textCoffinWeightBox.Text = coffinDetails.Rows[0]["weight"].ToString();
                     }
                     break;
                     

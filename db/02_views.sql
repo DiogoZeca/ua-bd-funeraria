@@ -135,6 +135,7 @@ SELECT
     cr.crematory_id,
     b.coffin_id AS burial_coffin_id,
     b.cemetery_id,
+    b.num_grave,
     f.church_id,
     hav.priest_bi
 FROM Process p
@@ -148,5 +149,3 @@ LEFT JOIN Burial b ON f.num_process = b.funeral_id
 JOIN Client c ON p.client_id = c.client_bi
 JOIN Representative r ON c.client_bi = r.person_bi
 JOIN Person client_pe ON r.person_bi = client_pe.bi
-
-
