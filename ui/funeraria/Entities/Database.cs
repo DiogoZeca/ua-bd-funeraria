@@ -428,6 +428,8 @@ namespace funeraria.Entities
             }
         }
 
+
+
         //
         // CEMETERY METHODS
         //
@@ -590,6 +592,9 @@ namespace funeraria.Entities
             }
         }
 
+
+
+
         //
         // CHURCH METHODS
         //
@@ -748,6 +753,10 @@ namespace funeraria.Entities
                 }
             }
         }
+
+
+
+
 
         //
         // PRIEST METHODS
@@ -951,6 +960,7 @@ namespace funeraria.Entities
                 }
             }
         }
+
 
 
 
@@ -1286,6 +1296,86 @@ namespace funeraria.Entities
                 }
             }
         }
+
+        public DataTable GetCoffinDetailsById(int productId)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                string command = @"
+                    SELECT c.size, co.color 
+                    FROM project.Products p
+                    JOIN project.Container c ON p.id = c.id
+                    JOIN project.Coffin co ON c.id = co.id
+                    WHERE p.id = @productId";
+                    
+                using (SqlCommand cmd = new SqlCommand(command, connection))
+                {
+                    cmd.Parameters.AddWithValue("@productId", productId);
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+                        DataTable table = new DataTable();
+                        adapter.Fill(table);
+                        return table;
+                    }
+                }
+            }
+        }
+
+        public DataTable GetUrnDetailsById(int productId)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                string command = @"
+                    SELECT c.size
+                    FROM project.Products p
+                    JOIN project.Container c ON p.id = c.id
+                    JOIN project.Urn u ON c.id = u.id
+                    WHERE p.id = @productId";
+                    
+                using (SqlCommand cmd = new SqlCommand(command, connection))
+                {
+                    cmd.Parameters.AddWithValue("@productId", productId);
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+                        DataTable table = new DataTable();
+                        adapter.Fill(table);
+                        return table;
+                    }
+                }
+            }
+        }
+
+        public DataTable GetFlowerDetailsById(int productId)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                string command = @"
+                    SELECT f.type, f.color
+                    FROM project.Products p
+                    JOIN project.Flowers f ON p.id = f.id
+                    WHERE p.id = @productId";
+                    
+                using (SqlCommand cmd = new SqlCommand(command, connection))
+                {
+                    cmd.Parameters.AddWithValue("@productId", productId);
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+                        DataTable table = new DataTable();
+                        adapter.Fill(table);
+                        return table;
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
 
         public String GetDeceasedNameByProcessId(decimal processId)
         {

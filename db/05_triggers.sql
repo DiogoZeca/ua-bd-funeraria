@@ -1,3 +1,4 @@
+-- SQLBook: Code
 DROP TRIGGER IF EXISTS trg_UpdateProductStock_Cremation;
 DROP TRIGGER IF EXISTS trg_UpdateProductStock_Burial;
 GO

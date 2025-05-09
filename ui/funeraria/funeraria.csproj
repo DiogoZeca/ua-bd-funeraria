@@ -89,6 +89,12 @@
     <Compile Include="Forms\InfoProcessForm.Designer.cs">
       <DependentUpon>InfoProcessForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\InventoryInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InventoryInfoForm.Designer.cs">
+      <DependentUpon>InventoryInfoForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\PriestForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -138,6 +144,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\InfoProcessForm.resx">
       <DependentUpon>InfoProcessForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InventoryInfoForm.resx">
+      <DependentUpon>InventoryInfoForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>

@@ -107,6 +107,13 @@ BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
+        IF EXISTS (SELECT * FROM Cemetery WHERE contact = @Contact)
+        BEGIN
+            SET @Status = 0;
+            SET @Message = 'Cemetery with contact already exist!';
+            RETURN;
+        END
+
         INSERT INTO dbo.Cemetery(location, contact, price)
         VALUES(@Location, @Contact, @Price)
 
@@ -130,6 +137,13 @@ BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
+        IF EXISTS (SELECT * FROM Churc WHERE name = @Name)
+        BEGIN
+            SET @Status = 0;
+            SET @Message = 'Church with this name already exist!';
+            RETURN;
+        END
+
         INSERT INTO dbo.Church(location, name)
         VALUES(@Location, @Name)
 
@@ -154,6 +168,13 @@ BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
+        IF EXISTS (SELECT * FROM Crematory WHERE contact = @Contact)
+        BEGIN
+            SET @Status = 0;
+            SET @Message = 'Cemetery with contact already exist!';
+            RETURN;
+        END
+
         INSERT INTO dbo.Crematory(location, contact, price)
         VALUES(@Location, @Contact, @Price)
 
@@ -315,6 +336,7 @@ BEGIN
             ProfilePicture = ISNULL(@ProfilePicture, ProfilePicture)
         WHERE id = @UserID;
 
+        -- Erro se nenhum tuplo afetado
         IF @@ROWCOUNT = 0
         BEGIN
             SET @StatusOut = 0;
@@ -326,6 +348,7 @@ BEGIN
         SET @Message = 'User details updated successfully';
     END TRY
     BEGIN CATCH
+        --Erro no try
         SET @StatusOut = 0;
         SET @Message = ERROR_MESSAGE();
     END CATCH

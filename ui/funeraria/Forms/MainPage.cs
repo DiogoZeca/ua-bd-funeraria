@@ -680,10 +680,11 @@ namespace funeraria.Forms
             }
             else if (gridInventory.Columns[e.ColumnIndex].Name == "detailsProduct")
             {
-                // Implementation for details view if needed
                 int productId = Convert.ToInt32(gridInventory.Rows[e.RowIndex].Cells["idProduct"].Value);
-                MessageBox.Show($"Product Details for ID: {productId}", "Product Details");
-                // You could implement a detailed view form here in the future
+                
+                // Open the inventory info form
+                InventoryInfoForm infoForm = new InventoryInfoForm(productId);
+                infoForm.ShowDialog();
             }
         }
 
