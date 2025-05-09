@@ -1,3 +1,7 @@
+DROP TRIGGER IF EXISTS trg_UpdateProductStock_Cremation;
+DROP TRIGGER IF EXISTS trg_UpdateProductStock_Burial;
+GO
+
 -- SQLBook: Code
 CREATE TRIGGER trg_UpdateProductStock_Cremation
 ON dbo.Cremation

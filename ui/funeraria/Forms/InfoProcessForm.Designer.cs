@@ -28,11 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.textNameBox = new System.Windows.Forms.TextBox();
-            this.PictureTrashClick = new System.Windows.Forms.PictureBox();
-            this.PictureBackClick = new System.Windows.Forms.PictureBox();
+            this.textFuncNameBox = new System.Windows.Forms.TextBox();
             this.textProccessBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -76,66 +73,37 @@
             this.label3 = new System.Windows.Forms.Label();
             this.SaveButtonProcess = new System.Windows.Forms.Button();
             this.buttonChangeIcon = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureTrashClick)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBackClick)).BeginInit();
+            this.PictureBackClick = new System.Windows.Forms.PictureBox();
+            this.PictureTrashClick = new System.Windows.Forms.PictureBox();
+            this.PicDeceased = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBackClick)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureTrashClick)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PicDeceased)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::funeraria.Properties.Resources.user_male;
-            this.pictureBox1.Location = new System.Drawing.Point(50, 32);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(176, 164);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(309, 67);
+            this.label1.Location = new System.Drawing.Point(296, 64);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(68, 25);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Name";
+            this.label1.Size = new System.Drawing.Size(187, 25);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Functionary Name";
             // 
-            // textNameBox
+            // textFuncNameBox
             // 
-            this.textNameBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textNameBox.Location = new System.Drawing.Point(392, 64);
-            this.textNameBox.Name = "textNameBox";
-            this.textNameBox.Size = new System.Drawing.Size(379, 30);
-            this.textNameBox.TabIndex = 2;
-            // 
-            // PictureTrashClick
-            // 
-            this.PictureTrashClick.Image = global::funeraria.Properties.Resources.user_trash_full;
-            this.PictureTrashClick.Location = new System.Drawing.Point(1009, 40);
-            this.PictureTrashClick.Name = "PictureTrashClick";
-            this.PictureTrashClick.Size = new System.Drawing.Size(84, 73);
-            this.PictureTrashClick.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.PictureTrashClick.TabIndex = 3;
-            this.PictureTrashClick.TabStop = false;
-            this.PictureTrashClick.Click += new System.EventHandler(this.PictureTrashClick_Click);
-            // 
-            // PictureBackClick
-            // 
-            this.PictureBackClick.Image = global::funeraria.Properties.Resources.arrow;
-            this.PictureBackClick.Location = new System.Drawing.Point(1127, 40);
-            this.PictureBackClick.Name = "PictureBackClick";
-            this.PictureBackClick.Size = new System.Drawing.Size(84, 73);
-            this.PictureBackClick.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.PictureBackClick.TabIndex = 4;
-            this.PictureBackClick.TabStop = false;
-            this.PictureBackClick.Click += new System.EventHandler(this.PictureBackClick_Click);
+            this.textFuncNameBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textFuncNameBox.Location = new System.Drawing.Point(500, 61);
+            this.textFuncNameBox.Name = "textFuncNameBox";
+            this.textFuncNameBox.Size = new System.Drawing.Size(379, 30);
+            this.textFuncNameBox.TabIndex = 2;
             // 
             // textProccessBox
             // 
             this.textProccessBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textProccessBox.Location = new System.Drawing.Point(392, 122);
+            this.textProccessBox.Location = new System.Drawing.Point(500, 122);
             this.textProccessBox.Name = "textProccessBox";
             this.textProccessBox.Size = new System.Drawing.Size(379, 30);
             this.textProccessBox.TabIndex = 6;
@@ -144,7 +112,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(247, 125);
+            this.label2.Location = new System.Drawing.Point(353, 125);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(130, 25);
             this.label2.TabIndex = 5;
@@ -552,7 +520,7 @@
             this.SaveButtonProcess.Location = new System.Drawing.Point(1009, 141);
             this.SaveButtonProcess.Name = "SaveButtonProcess";
             this.SaveButtonProcess.Size = new System.Drawing.Size(193, 55);
-            this.SaveButtonProcess.TabIndex = 10;
+            this.SaveButtonProcess.TabIndex = 1;
             this.SaveButtonProcess.Text = "Save";
             this.SaveButtonProcess.UseVisualStyleBackColor = false;
             this.SaveButtonProcess.Click += new System.EventHandler(this.SaveButtonProcess_Click);
@@ -560,13 +528,45 @@
             // buttonChangeIcon
             // 
             this.buttonChangeIcon.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.buttonChangeIcon.Location = new System.Drawing.Point(72, 202);
+            this.buttonChangeIcon.Location = new System.Drawing.Point(81, 182);
             this.buttonChangeIcon.Name = "buttonChangeIcon";
             this.buttonChangeIcon.Size = new System.Drawing.Size(119, 40);
             this.buttonChangeIcon.TabIndex = 11;
             this.buttonChangeIcon.Text = "Change Icon";
             this.buttonChangeIcon.UseVisualStyleBackColor = false;
             this.buttonChangeIcon.Click += new System.EventHandler(this.buttonChangeIcon_Click);
+            // 
+            // PictureBackClick
+            // 
+            this.PictureBackClick.Image = global::funeraria.Properties.Resources.arrow;
+            this.PictureBackClick.Location = new System.Drawing.Point(1127, 40);
+            this.PictureBackClick.Name = "PictureBackClick";
+            this.PictureBackClick.Size = new System.Drawing.Size(84, 73);
+            this.PictureBackClick.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PictureBackClick.TabIndex = 4;
+            this.PictureBackClick.TabStop = false;
+            this.PictureBackClick.Click += new System.EventHandler(this.PictureBackClick_Click);
+            // 
+            // PictureTrashClick
+            // 
+            this.PictureTrashClick.Image = global::funeraria.Properties.Resources.user_trash_full;
+            this.PictureTrashClick.Location = new System.Drawing.Point(1009, 40);
+            this.PictureTrashClick.Name = "PictureTrashClick";
+            this.PictureTrashClick.Size = new System.Drawing.Size(84, 73);
+            this.PictureTrashClick.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PictureTrashClick.TabIndex = 3;
+            this.PictureTrashClick.TabStop = false;
+            this.PictureTrashClick.Click += new System.EventHandler(this.PictureTrashClick_Click);
+            // 
+            // PicDeceased
+            // 
+            this.PicDeceased.Image = global::funeraria.Properties.Resources.user_male;
+            this.PicDeceased.Location = new System.Drawing.Point(50, 12);
+            this.PicDeceased.Name = "PicDeceased";
+            this.PicDeceased.Size = new System.Drawing.Size(176, 164);
+            this.PicDeceased.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PicDeceased.TabIndex = 0;
+            this.PicDeceased.TabStop = false;
             // 
             // InfoProcessForm
             // 
@@ -581,19 +581,19 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.PictureBackClick);
             this.Controls.Add(this.PictureTrashClick);
-            this.Controls.Add(this.textNameBox);
+            this.Controls.Add(this.textFuncNameBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.PicDeceased);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "InfoProcessForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "InfoProcessForm";
             this.Load += new System.EventHandler(this.InfoProcessForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureTrashClick)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBackClick)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBackClick)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureTrashClick)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PicDeceased)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -601,9 +601,9 @@
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox PicDeceased;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textNameBox;
+        private System.Windows.Forms.TextBox textFuncNameBox;
         private System.Windows.Forms.PictureBox PictureTrashClick;
         private System.Windows.Forms.PictureBox PictureBackClick;
         private System.Windows.Forms.TextBox textProccessBox;

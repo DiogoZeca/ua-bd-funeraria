@@ -1,7 +1,6 @@
 -- SQLBook: Code
 DROP FUNCTION IF EXISTS dbo.findBiExists;
 DROP FUNCTION IF EXISTS dbo.findNifExists;
-GO
 DROP FUNCTION IF EXISTS dbo.findProcNumberExists;
 GO
 

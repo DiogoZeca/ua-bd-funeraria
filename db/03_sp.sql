@@ -335,6 +335,7 @@ GO
 CREATE PROCEDURE sp_addProcess
     @processNumber INT,
     @fullName NVARCHAR(255),
+    @PicDeceased VARBINARY(MAX),
     @bi VARCHAR(50),
     @sex CHAR(1),
     @local VARCHAR(255),
@@ -367,7 +368,7 @@ BEGIN
             INSERT INTO dbo.Person (bi, name) VALUES (@bi, @fullName);
 
         INSERT INTO dbo.Deceased (person_bi, sex, birth_date, marital_status, residence, nationality, picture)
-        VALUES (@bi, @sex, @birthDate, @maritalStatus, @address, @nationality, NULL);
+        VALUES (@bi, @sex, @birthDate, @maritalStatus, @address, @nationality, @PicDeceased);
 
         -- Cliente
         IF NOT EXISTS (SELECT 1 FROM dbo.Person WHERE bi = @clientId)

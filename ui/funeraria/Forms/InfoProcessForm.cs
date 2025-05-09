@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,43 @@ namespace funeraria.Forms
             this.numFunc = numFunc;
             InitializeComponent();
             this.id = id;
+
+            // Hide save button when viewing existing process
+            SaveButtonProcess.Visible = false;
+
+            // Make all fields read-only for view mode
+            SetAllFieldsReadOnly(true);            
+            buttonChangeIcon.Visible = false;
+
+            // Funeral Type ComboBox event handler
+            comboFuneralTypeBox.SelectedIndexChanged += ComboFuneralTypeBox_SelectedIndexChanged;
+        }
+
+        private void SetAllFieldsReadOnly(bool readOnly)
+        {
+            // Set all textboxes to read-only
+            textFuncNameBox.ReadOnly = readOnly;
+            textProccessBox.ReadOnly = readOnly;
+            textIDNumberBox.ReadOnly = readOnly;
+            textFullNameBox.ReadOnly = readOnly;
+            textSexBox.ReadOnly = readOnly;
+            textMaritalStatusBox.ReadOnly = readOnly;
+            textAddressBox.ReadOnly = readOnly;
+            textNationalityBox.ReadOnly = readOnly;
+            textBirthDateBox.ReadOnly = readOnly;
+            textLocalBox.ReadOnly = readOnly;
+            textFuneralDateBox.ReadOnly = readOnly;
+            textGraveNumberBox.ReadOnly = readOnly;
+            textClientNameBox.ReadOnly = readOnly;
+            textRelationshipBox.ReadOnly = readOnly;
+            textClientIDBox.ReadOnly = readOnly;
+            
+            // Disable comboboxes
+            comboFuneralTypeBox.Enabled = !readOnly;
+            comboPriestBox.Enabled = !readOnly;
+            comboCerimonyPlaceBox.Enabled = !readOnly;
+            comboUrnBox.Enabled = !readOnly;
+            comboCoffinBox.Enabled = !readOnly;
         }
 
         private void PictureTrashClick_Click(object sender, EventArgs e)
@@ -73,6 +111,7 @@ namespace funeraria.Forms
             if (id > 0)
             {
                 LoadProcessData(id);
+                this.ActiveControl = null;
             }
 
         }
@@ -224,10 +263,29 @@ namespace funeraria.Forms
             if (processData != null && processData.Rows.Count > 0)
             {
                 DataRow row = processData.Rows[0];
+
+                int userId = Convert.ToInt32(row["user_id"]);
+                textFuncNameBox.Text = db.GetUserbyId(userId)["name"].ToString();
+
+                if (row["deceased_bi"] != DBNull.Value)
+                {
+                    if (row.Table.Columns.Contains("picture") && row["picture"] != DBNull.Value)
+                    {
+                        byte[] img = (byte[])row["picture"];
+                        using (MemoryStream ms = new MemoryStream(img))
+                        {
+                            PicDeceased.Image = Image.FromStream(ms);
+                        }
+                    }
+                    else
+                    {
+                        PicDeceased.Image = global::funeraria.Properties.Resources.user_male;
+                    }
+                }
+
                 
                 // Set basic process info
                 textProccessBox.Text = row["num_process"].ToString();
-                textProccessBox.ReadOnly = true; // Prevent changing process number in edit mode
                 
                 // Get deceased information
                 string id = row["user_id"].ToString();
@@ -422,6 +480,8 @@ namespace funeraria.Forms
                 string maritalStatus = textMaritalStatusBox.Text;
                 string address = textAddressBox.Text;
                 string nationality = textNationalityBox.Text;
+                byte[] img = new byte[0];
+                MemoryStream ms = new MemoryStream();
 
                 // Get selected values from combo boxes
                 string funeralType = GetSelectedFuneralType();
@@ -438,6 +498,12 @@ namespace funeraria.Forms
                     MessageBox.Show("Client ID cannot be empty.", 
                                 "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
+                }
+
+                if (PicDeceased.Image != null)
+                {
+                    PicDeceased.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    img = ms.ToArray();
                 }
 
                 // Fix the typo and convert all IDs to integers in one step
@@ -502,7 +568,7 @@ namespace funeraria.Forms
                     return;
                 } 
 
-                success = db.AddProcess(processNumber, fullName, bi, sex, local, funeralDate, relationship, clientName, coffinId, urnId, churchId, priestBi, funeralType, nationality, address, maritalStatus, birthDate, clientId, numFunc);
+                success = db.AddProcess(processNumber, fullName, bi, sex, local, funeralDate, relationship, clientName, coffinId, urnId, churchId, priestBi, funeralType, nationality, address, maritalStatus, birthDate, clientId, numFunc, img);
                 MessageBox.Show(success ? "Process added successfully." : "Failed to add Process.");
                 
                 if (success)
@@ -527,8 +593,8 @@ namespace funeraria.Forms
                 {
                     try
                     {
-                        pictureBox1.Image = new Bitmap(dlg.FileName);
-                        pictureBox1.Visible = true;
+                        PicDeceased.Image = new Bitmap(dlg.FileName);
+                        PicDeceased.Visible = true;
                     }
                     catch (Exception ex)
                     {

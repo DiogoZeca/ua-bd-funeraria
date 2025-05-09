@@ -1101,46 +1101,7 @@ namespace funeraria.Entities
             using (SqlConnection connection = ConnectDB())
             {
                 connection.Open();
-                String command = @"
-                                SELECT
-                                    p.user_id,
-                                    p.num_process,
-                                    p.degree_kinship,
-                                    p.client_id,
-                                    client_pe.name AS client_name,  -- aqui está!
-                                    d.sex,
-                                    d.marital_status,
-                                    d.residence,
-                                    d.nationality,
-                                    d.birth_date,
-                                    f.location,
-                                    f.funeral_date,
-                                    f.deceased_bi,
-                                    pe.name,
-                                    CASE
-                                        WHEN b.funeral_id IS NOT NULL THEN 'Burial'
-                                        WHEN cr.funeral_id IS NOT NULL THEN 'Cremation'
-                                        ELSE 'Unknown'
-                                    END AS funeral_type,
-                                    cr.coffin_id AS cremation_coffin_id,
-                                    cr.urn_id,
-                                    cr.crematory_id,
-                                    b.coffin_id AS burial_coffin_id,
-                                    b.cemetery_id,
-                                    f.church_id,
-                                    hav.priest_bi
-                                FROM Process p
-                                JOIN Funeral f ON p.num_process = f.num_process
-                                JOIN Church ch ON f.church_id = ch.id
-                                LEFT JOIN Have hav ON hav.church_id = ch.id
-                                JOIN Deceased d ON f.deceased_bi = d.person_bi
-                                JOIN Person pe ON d.person_bi = pe.bi
-                                LEFT JOIN Cremation cr ON f.num_process = cr.funeral_id
-                                LEFT JOIN Burial b ON f.num_process = b.funeral_id
-                                JOIN Client c ON p.client_id = c.client_bi
-                                JOIN Representative r ON c.client_bi = r.person_bi
-                                JOIN Person client_pe ON r.person_bi = client_pe.bi
-                                WHERE p.num_process = @processID";
+                String command = "SELECT * FROM vw_LoadProcess WHERE num_process = @processID";
                 using (SqlCommand cmd = new SqlCommand(command, connection))
                 {
                     cmd.Parameters.AddWithValue("@processID", id);
@@ -1154,7 +1115,20 @@ namespace funeraria.Entities
                 }
             }
         }
-
+        public byte[] GetDeceasedImageByProcessId(int processId)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                String command = "SELECT picture FROM vw_ProcessesWithDeceased WHERE num_process = @processID";
+                using (SqlCommand cmd = new SqlCommand(command, connection))
+                {
+                    cmd.Parameters.AddWithValue("@processID", processId);
+                    object result = cmd.ExecuteScalar();
+                    return (result != null && result != DBNull.Value) ? (byte[])result : null;
+                }
+            }
+        }
         public DataTable GetAllProcessList()
         {
             using (SqlConnection connection = ConnectDB())
@@ -1173,7 +1147,6 @@ namespace funeraria.Entities
                 }
             }
         }
-
         public bool ProcessExists( int ProcNumber )
         {
             using (SqlConnection connection = ConnectDB())
@@ -1191,8 +1164,7 @@ namespace funeraria.Entities
                 }
             }
         }
-
-        public bool AddProcess(string processNumber, string fullName, string bi, char sex, string local, DateTime funeralDate, string relationship, string clientName, int coffinId, int urnId, int churchId, string priestBi, string funeralType, string nationality, string address, string maritalStatus, DateTime birthDate, string clientBi, int numFunc) {
+        public bool AddProcess(string processNumber, string fullName, string bi, char sex, string local, DateTime funeralDate, string relationship, string clientName, int coffinId, int urnId, int churchId, string priestBi, string funeralType, string nationality, string address, string maritalStatus, DateTime birthDate, string clientBi, int numFunc, byte[] img) {
 
             using (SqlConnection connection = ConnectDB())
             {
@@ -1207,6 +1179,7 @@ namespace funeraria.Entities
 
                         command.Parameters.AddWithValue("@processNumber", int.Parse(processNumber));
                         command.Parameters.AddWithValue("@fullName", fullName);
+                        command.Parameters.AddWithValue("@PicDeceased", img);
                         command.Parameters.AddWithValue("@bi", bi);
                         command.Parameters.AddWithValue("@sex", sex);
                         command.Parameters.AddWithValue("@local", local);
@@ -1295,6 +1268,25 @@ namespace funeraria.Entities
             }
         }
 
+        public DataTable GetProductById(int productId)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                string command = "SELECT * FROM Products WHERE id = @productId";
+                using (SqlCommand cmd = new SqlCommand(command, connection))
+                {
+                    cmd.Parameters.AddWithValue("@productId", productId);
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+                        DataTable table = new DataTable();
+                        adapter.Fill(table);
+                        return table;
+                    }
+                }
+            }
+        }
+
         public String GetDeceasedNameByProcessId(decimal processId)
         {
             using (SqlConnection connection = ConnectDB())
@@ -1357,7 +1349,54 @@ namespace funeraria.Entities
             }
         }
 
-        
+        public bool PurchaseProduct(int productId, int quantity)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                using (SqlTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        // Check current stock
+                        string checkCommand = "SELECT stock FROM Products WHERE id = @productId";
+                        using (SqlCommand cmd = new SqlCommand(checkCommand, connection, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@productId", productId);
+                            int currentStock = Convert.ToInt32(cmd.ExecuteScalar());
+                            
+                            if (currentStock < quantity)
+                            {
+                                transaction.Rollback();
+                                MessageBox.Show("Not enough stock available", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return false;
+                            }
+                        }
+                        
+                        // Update stock
+                        string updateCommand = "UPDATE Products SET stock = stock + @quantity WHERE id = @productId";
+                        using (SqlCommand cmd = new SqlCommand(updateCommand, connection, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@quantity", quantity);
+                            cmd.Parameters.AddWithValue("@productId", productId);
+                            cmd.ExecuteNonQuery();
+                        }
+                        
+                        // Add purchase record if needed
+                        // You might want to record the purchase in a sales or transactions table
+                        
+                        transaction.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show($"Error during purchase: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
+                }
+            }
+        }
 
     }
 }

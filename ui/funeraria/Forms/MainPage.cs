@@ -150,18 +150,20 @@ namespace funeraria.Forms
             moreInfo.Width = 50;
             dataGridProcess.Columns.Add(moreInfo);
 
+            // Info Page
+            DataGridViewImageColumn picture = new DataGridViewImageColumn();
+            picture.Name = "picture";
+            picture.HeaderText = "picture";
+            picture.ImageLayout = DataGridViewImageCellLayout.Zoom;
+            picture.Width = 50;
+            dataGridProcess.Columns.Add(picture);
+
 
             dataGridProcess.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "num_process",
                 HeaderText = "PROCESS NUMBER",
                 Name = "ProcessNum"
-            });
-
-            dataGridProcess.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "picture",
-                HeaderText = "PICTURE"
             });
 
             dataGridProcess.Columns.Add(new DataGridViewTextBoxColumn
@@ -191,6 +193,19 @@ namespace funeraria.Forms
                 string deceasedName = db.GetDeceasedNameByProcessId(processId);
                 DateTime funeralDate = db.GetFuneralDateByProcessId(processId);
                 string localDeath = db.GetLocalDeathByProcessId(processId);
+                byte[] imageData = db.GetDeceasedImageByProcessId(Convert.ToInt32(processId));
+                
+                if (imageData != null)
+                {
+                    using (System.IO.MemoryStream ms = new System.IO.MemoryStream(imageData))
+                    {
+                        row.Cells["picture"].Value = Image.FromStream(ms);
+                    }
+                }
+                else
+                {
+                    row.Cells["picture"].Value = global::funeraria.Properties.Resources.user_male;
+                }
 
                 row.Cells["local"].Value = localDeath;
                 row.Cells["DeceasedName"].Value = deceasedName;
@@ -648,6 +663,32 @@ namespace funeraria.Forms
             }
         }
 
+        private void gridInventory_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return; // Ignore header clicks
+            
+            if (gridInventory.Columns[e.ColumnIndex].Name == "shop")
+            {
+                int productId = Convert.ToInt32(gridInventory.Rows[e.RowIndex].Cells["idProduct"].Value);
+                ShopForm shopForm = new ShopForm(productId);
+                
+                if (shopForm.ShowDialog() == DialogResult.OK)
+                {
+                    // Reload inventory data after purchase
+                    LoadInventory();
+                }
+            }
+            else if (gridInventory.Columns[e.ColumnIndex].Name == "detailsProduct")
+            {
+                // Implementation for details view if needed
+                int productId = Convert.ToInt32(gridInventory.Rows[e.RowIndex].Cells["idProduct"].Value);
+                MessageBox.Show($"Product Details for ID: {productId}", "Product Details");
+                // You could implement a detailed view form here in the future
+            }
+        }
+
+
+
         //
         // Personalizar Grids
         //
@@ -1015,6 +1056,9 @@ namespace funeraria.Forms
             gridInventory.Columns.Add(detailsColumn);
 
             gridInventory.DataSource = filteredData;
+
+            gridInventory.CellClick -= gridInventory_CellClick;
+            gridInventory.CellClick += gridInventory_CellClick;
         }
 
         private void btnProfileEdit_Click(object sender, EventArgs e)
