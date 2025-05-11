@@ -137,7 +137,7 @@ SELECT
     b.cemetery_id,
     b.num_grave,
     f.church_id,
-    hav.priest_bi
+    f.priest_bi
 FROM Process p
 JOIN Funeral f ON p.num_process = f.num_process
 JOIN Church ch ON f.church_id = ch.id

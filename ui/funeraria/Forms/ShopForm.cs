@@ -23,7 +23,7 @@ namespace funeraria.Forms
         {
             InitializeComponent();
             this.productId = productId;
-            
+
             // Set up event handlers
             this.BuyButtonClick.Click += BuyButtonClick_Click;
             this.PictureBackClick.Click += PictureBackClick_Click;
@@ -43,27 +43,29 @@ namespace funeraria.Forms
             if (productInfo != null && productInfo.Rows.Count > 0)
             {
                 DataRow row = productInfo.Rows[0];
-                
+
                 // Get product type
                 productType = db.GetProductTypeById(productId);
-                
+
                 // Get stock information
                 stockAvailable = Convert.ToInt32(row["stock"]);
-                
+
                 // Get price if available
                 if (row["price"] != DBNull.Value)
                 {
                     price = Convert.ToDecimal(row["price"]);
                 }
-                
+
                 // Update the UI with product info
-                ObjectName.Text = productType;
+                ObjectType.Text = productType;
                 ObjectID.Text = productId.ToString();
-                
+                ObjectStock.Text = stockAvailable.ToString();
+
                 // Make text boxes read-only as they're for display only
-                ObjectName.ReadOnly = true;
+                ObjectType.ReadOnly = true;
                 ObjectID.ReadOnly = true;
-                
+                ObjectStock.ReadOnly = true;
+
                 // Configure the quantity control
                 ShopQuantity.Minimum = 1;
                 ShopQuantity.Maximum = stockAvailable;
@@ -79,7 +81,7 @@ namespace funeraria.Forms
         private void BuyButtonClick_Click(object sender, EventArgs e)
         {
             int quantity = Convert.ToInt32(ShopQuantity.Value);
-            
+
             if (quantity <= 0 || quantity > stockAvailable)
             {
                 MessageBox.Show("Please select a valid quantity.", "Invalid Quantity", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -89,7 +91,7 @@ namespace funeraria.Forms
             // Call the database method to update the stock
             Database db = Database.GetDatabase();
             bool success = db.PurchaseProduct(productId, quantity);
-            
+
             if (success)
             {
                 MessageBox.Show($"Successfully purchased {quantity} {productType}(s).", "Purchase Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
