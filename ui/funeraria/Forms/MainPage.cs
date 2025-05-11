@@ -200,7 +200,9 @@ namespace funeraria.Forms
                 DateTime funeralDate = db.GetFuneralDateByProcessId(processId);
                 string localDeath = db.GetLocalDeathByProcessId(processId);
                 byte[] imageData = db.GetDeceasedImageByProcessId(Convert.ToInt32(processId));
-                
+                decimal budget = db.GetBudgetByProcessId(processId);
+                row.Cells["Budget"].Value = budget;
+
                 if (imageData != null)
                 {
                     using (System.IO.MemoryStream ms = new System.IO.MemoryStream(imageData))
@@ -668,16 +670,15 @@ namespace funeraria.Forms
                 }
             }
         }
-
         private void gridInventory_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return; // Ignore header clicks
-            
+
             if (gridInventory.Columns[e.ColumnIndex].Name == "shop")
             {
                 int productId = Convert.ToInt32(gridInventory.Rows[e.RowIndex].Cells["idProduct"].Value);
                 ShopForm shopForm = new ShopForm(productId);
-                
+
                 if (shopForm.ShowDialog() == DialogResult.OK)
                 {
                     // Reload inventory data after purchase
@@ -687,7 +688,7 @@ namespace funeraria.Forms
             else if (gridInventory.Columns[e.ColumnIndex].Name == "detailsProduct")
             {
                 int productId = Convert.ToInt32(gridInventory.Rows[e.RowIndex].Cells["idProduct"].Value);
-                
+
                 // Open the inventory info form
                 InventoryInfoForm infoForm = new InventoryInfoForm(productId);
                 infoForm.ShowDialog();

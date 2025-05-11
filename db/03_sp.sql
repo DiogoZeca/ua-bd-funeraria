@@ -428,7 +428,7 @@ BEGIN
         -- Have
         INSERT INTO dbo.Have (
             priest_bi, church_id
-        ) 
+        )
         VALUES (
             @priestBi, @churchId
         )
@@ -437,7 +437,7 @@ BEGIN
         IF LOWER(@funeralType) = 'cremation'
         BEGIN
             INSERT INTO dbo.Cremation (funeral_id, crematory_id, coffin_id, urn_id)
-            VALUES (@processNumber, NULL, @coffinId, @urnId);
+            VALUES (@processNumber, @Crematory_ID, @coffinId, @urnId);
         END
         ELSE IF LOWER(@funeralType) = 'burial'
         BEGIN
@@ -463,42 +463,54 @@ BEGIN
             @priest_price DECIMAL(10,2),
             @container_price DECIMAL(10,2),
             @flower_price DECIMAL(10,2),
-            @total_price DECIMAL(10,2);
+            @total_price DECIMAL(10,2),
+            @funeral_type NVARCHAR(50);
 
     DECLARE funeral_cursor CURSOR FOR
-        SELECT num_process FROM Funeral;
+        SELECT f.num_process,
+            CASE
+                WHEN EXISTS (SELECT 1 FROM Burial WHERE funeral_id = f.num_process) THEN 'Burial'
+                WHEN EXISTS (SELECT 1 FROM Cremation WHERE funeral_id = f.num_process) THEN 'Cremation'
+                ELSE NULL
+            END AS funeral_type
+            FROM Funeral f;
 
     OPEN funeral_cursor;
-    FETCH NEXT FROM funeral_cursor INTO @process_id;
+    FETCH NEXT FROM funeral_cursor INTO @process_id, @funeral_type;
 
     WHILE @@FETCH_STATUS = 0
     BEGIN
 
-        -- Preço do cemitério
-        SELECT @cemetery_price = c.price
-        FROM Cemetery c
-        JOIN Burial b ON b.cemetery_id = c.id
-        WHERE b.funeral_id = @process_id;
-
-        -- Preço do cemitério
-        SELECT @crematory_price = c.price
-        FROM Crematory c
-        JOIN Cremation b ON b.crematory_id = c.id
-        WHERE b.funeral_id = @process_id;
-
-        -- Inicializar
+        -- Reset prices
+        SET @cemetery_price = 0;
+        SET @crematory_price = 0;
         SET @container_price = 0;
+        SET @flower_price = 0;
+        SET @priest_price = 0;
 
-        -- Se for funeral com enterro
-        SELECT @container_price = p.price
-        FROM Burial b
-        JOIN Coffin cf ON cf.id = b.coffin_id
-        JOIN Products p ON p.id = cf.id
-        WHERE b.funeral_id = @process_id;
-
-        -- Se for cremação: soma o caixão + urna
-        IF EXISTS (SELECT 1 FROM Cremation WHERE funeral_id = @process_id)
+        -- Handle Burial
+        IF @funeral_type = 'Burial'
         BEGIN
+            SELECT @cemetery_price = c.price
+            FROM Cemetery c
+            JOIN Burial b ON b.cemetery_id = c.id
+            WHERE b.funeral_id = @process_id;
+
+            SELECT @container_price = p.price
+            FROM Burial b
+            JOIN Coffin cf ON cf.id = b.coffin_id
+            JOIN Products p ON p.id = cf.id
+            WHERE b.funeral_id = @process_id;
+        END
+
+        -- Handle Cremation
+        IF @funeral_type = 'Cremation'
+        BEGIN
+            SELECT @crematory_price = c.price
+            FROM Crematory c
+            JOIN Cremation b ON b.crematory_id = c.id
+            WHERE b.funeral_id = @process_id;
+
             DECLARE @cremation_coffin_price DECIMAL(10,2) = 0;
             DECLARE @urn_price DECIMAL(10,2) = 0;
 
@@ -515,7 +527,7 @@ BEGIN
             WHERE c.funeral_id = @process_id;
 
             SET @container_price = ISNULL(@cremation_coffin_price, 0) + ISNULL(@urn_price, 0);
-        END;
+        END
 
         -- Preço das flores: Produtos ligados à tabela Flowers
         SELECT @flower_price = SUM(p.price * f.quantity)
@@ -537,7 +549,6 @@ BEGIN
                            ISNULL(@flower_price, 0) +
                            ISNULL(@priest_price, 0);
 
-        -- DEBUG OUTPUT
         PRINT 'PROCESS ID: ' + CAST(@process_id AS VARCHAR);
         PRINT 'Cemetery Price: ' + CAST(ISNULL(@cemetery_price, 0) AS VARCHAR);
         PRINT 'Crematory Price: ' + CAST(ISNULL(@crematory_price, 0) AS VARCHAR);
@@ -547,12 +558,11 @@ BEGIN
         PRINT 'TOTAL: ' + CAST(@total_price AS VARCHAR);
         PRINT '------------------------------------';
 
-        -- Atualiza o campo budget no processo
         UPDATE Process
         SET budget = @total_price
         WHERE num_process = @process_id;
 
-        FETCH NEXT FROM funeral_cursor INTO @process_id;
+        FETCH NEXT FROM funeral_cursor INTO @process_id, @funeral_type;
     END;
 
     CLOSE funeral_cursor;
@@ -567,39 +577,39 @@ BEGIN
     SET NOCOUNT ON;
     BEGIN TRY
         BEGIN TRANSACTION;
-        
+
         -- Delete from Flowers first (references Process directly)
-        DELETE FROM dbo.Flowers 
+        DELETE FROM dbo.Flowers
         WHERE process_num = @processId;
-        
+
         -- Delete from Cremation (relies on Funeral)
-        DELETE FROM dbo.Cremation 
+        DELETE FROM dbo.Cremation
         WHERE funeral_id = @processId;
-        
+
         -- Delete from Burial (relies on Funeral)
-        DELETE FROM dbo.Burial 
+        DELETE FROM dbo.Burial
         WHERE funeral_id = @processId;
-        
+
         -- Delete from Funeral
-        DELETE FROM dbo.Funeral 
+        DELETE FROM dbo.Funeral
         WHERE num_process = @processId;
-        
+
         -- Finally delete from Process table
-        DELETE FROM dbo.Process 
+        DELETE FROM dbo.Process
         WHERE num_process = @processId;
-        
+
         COMMIT TRANSACTION;
         RETURN 1; -- Success
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0
             ROLLBACK TRANSACTION;
-            
+
         -- Return the error information
         DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
         DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
         DECLARE @ErrorState INT = ERROR_STATE();
-        
+
         RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
         RETURN -1; -- Failure
     END CATCH

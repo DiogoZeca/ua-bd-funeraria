@@ -665,7 +665,7 @@ namespace funeraria.Entities
                         String msg = (String)command.Parameters["@Message"].Value;
                         MessageBox.Show(msg, "Delete Church", MessageBoxButtons.OK);
                         connection.Close();
-                    } 
+                    }
                     catch (Exception ex)
                     {
                         MessageBox.Show("Error \r\n" + ex.Message, "Delete Church Error", MessageBoxButtons.OK);
@@ -753,8 +753,6 @@ namespace funeraria.Entities
                 }
             }
         }
-
-
 
 
 
@@ -1210,11 +1208,11 @@ namespace funeraria.Entities
                         command.Parameters.AddWithValue("@budget", 0.00m);
                         command.Parameters.AddWithValue("@description", "Funeral Process");
                         command.Parameters.AddWithValue("@typeOfPayment", funeralType);
-                        command.Parameters.AddWithValue("@userId", numFunc); // ajustar conforme utilizador autenticado
-                        command.Parameters.AddWithValue("@clientId", clientBi); // usar bi como clientId (ajustar se necessário)
-                        command.Parameters.AddWithValue("@Cemetery_ID", cemeteryId); 
-                        command.Parameters.AddWithValue("@Crematory_ID", crematoryId); // usar bi como clientId (ajustar se necessário) 
-                        command.Parameters.AddWithValue("@Num_grave", numGrave); // usar bi como clientId (ajustar se necessário)  
+                        command.Parameters.AddWithValue("@userId", numFunc);
+                        command.Parameters.AddWithValue("@clientId", clientBi);
+                        command.Parameters.AddWithValue("@Cemetery_ID", cemeteryId);
+                        command.Parameters.AddWithValue("@Crematory_ID", crematoryId);
+                        command.Parameters.AddWithValue("@Num_grave", numGrave);
 
                         command.ExecuteNonQuery();
                     }
@@ -1270,7 +1268,7 @@ namespace funeraria.Entities
                 using (SqlCommand cmd = new SqlCommand("sp_UpdateFuneralBudgets", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.ExecuteNonQuery(); 
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
@@ -1296,7 +1294,6 @@ namespace funeraria.Entities
                 }
             }
         }
-
         public string GetProductTypeById(decimal id)
         {
             using (SqlConnection connection = ConnectDB())
@@ -1311,7 +1308,6 @@ namespace funeraria.Entities
                 }
             }
         }
-
         public DataTable GetProductById(int productId)
         {
             using (SqlConnection connection = ConnectDB())
@@ -1331,6 +1327,30 @@ namespace funeraria.Entities
             }
         }
 
+        public decimal GetBudgetByProcessId(decimal processId)
+        {
+            using (SqlConnection connection = ConnectDB())
+            {
+                connection.Open();
+                using (SqlCommand cmd = new SqlCommand("SELECT budget FROM dbo.Process WHERE num_process = @processId", connection))
+                {
+                    cmd.Parameters.AddWithValue("@processId", processId);
+                    object result = cmd.ExecuteScalar();
+                    return result != null ? Convert.ToDecimal(result) : 0;
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
         public DataTable GetCoffinDetailsById(int productId)
         {
             using (SqlConnection connection = ConnectDB())
@@ -1342,7 +1362,7 @@ namespace funeraria.Entities
                     JOIN dbo.Container c ON p.id = c.id
                     JOIN dbo.Coffin co ON c.id = co.id
                     WHERE p.id = @productId";
-                    
+
                 using (SqlCommand cmd = new SqlCommand(command, connection))
                 {
                     cmd.Parameters.AddWithValue("@productId", productId);
@@ -1367,7 +1387,7 @@ namespace funeraria.Entities
                     JOIN dbo.Container c ON p.id = c.id
                     JOIN dbo.Urn u ON c.id = u.id
                     WHERE p.id = @productId";
-                    
+
                 using (SqlCommand cmd = new SqlCommand(command, connection))
                 {
                     cmd.Parameters.AddWithValue("@productId", productId);
@@ -1391,7 +1411,7 @@ namespace funeraria.Entities
                     FROM dbo.Products p
                     JOIN dbo.Flowers f ON p.id = f.id
                     WHERE p.id = @productId";
-                    
+
                 using (SqlCommand cmd = new SqlCommand(command, connection))
                 {
                     cmd.Parameters.AddWithValue("@productId", productId);
@@ -1461,8 +1481,6 @@ namespace funeraria.Entities
             using (SqlConnection connection = ConnectDB())
             {
                 connection.Open();
-                // This assumes you store the church ID somewhere when creating a process
-                // You may need to adjust this query based on your actual data model
                 String command = "SELECT church_id FROM Funeral WHERE num_process = @processId";
                 using (SqlCommand cmd = new SqlCommand(command, connection))
                 {
@@ -1488,7 +1506,7 @@ namespace funeraria.Entities
                         {
                             cmd.Parameters.AddWithValue("@productId", productId);
                             int currentStock = Convert.ToInt32(cmd.ExecuteScalar());
-                            
+
                             if (currentStock < quantity)
                             {
                                 transaction.Rollback();
@@ -1496,7 +1514,7 @@ namespace funeraria.Entities
                                 return false;
                             }
                         }
-                        
+
                         // Update stock
                         string updateCommand = "UPDATE Products SET stock = stock + @quantity WHERE id = @productId";
                         using (SqlCommand cmd = new SqlCommand(updateCommand, connection, transaction))
@@ -1505,10 +1523,7 @@ namespace funeraria.Entities
                             cmd.Parameters.AddWithValue("@productId", productId);
                             cmd.ExecuteNonQuery();
                         }
-                        
-                        // Add purchase record if needed
-                        // You might want to record the purchase in a sales or transactions table
-                        
+
                         transaction.Commit();
                         return true;
                     }
