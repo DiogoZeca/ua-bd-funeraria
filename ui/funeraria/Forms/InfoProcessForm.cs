@@ -650,14 +650,26 @@ namespace funeraria.Forms
                 comboCemeteryBox.Enabled = !isReadOnly;
                 textGraveNumberBox.Enabled = !isReadOnly;
                 
-                // Disable cremation-specific controls
+                // Reset cremation-specific controls
                 comboUrnBox.Enabled = false;
                 comboUrnBox.SelectedIndex = -1;
-                comboUrnBox.Text = isReadOnly ? "" : "Not applicable for burial";
+                comboUrnBox.Text = "Not applicable for burial";
                 
                 comboCrematoryBox.Enabled = false;
                 comboCrematoryBox.SelectedIndex = -1;
-                comboCrematoryBox.Text = isReadOnly ? "" : "Not applicable for burial";
+                comboCrematoryBox.Text = "Not applicable for burial";
+                
+                // If coming from cremation to burial, clear any previous selections
+                if (!isReadOnly && comboCrematoryBox.Tag != null && (string)comboCrematoryBox.Tag == "cremation")
+                {
+                    // Reset cemetery selections - clear both selection and text
+                    comboCemeteryBox.SelectedIndex = -1;
+                    comboCemeteryBox.Text = "";
+                    textGraveNumberBox.Clear();
+                }
+                
+                // Mark that we're in burial mode now
+                comboCrematoryBox.Tag = "burial";
             }
             else if (comboFuneralTypeBox.SelectedItem?.ToString() == "Cremation")
             {
@@ -665,13 +677,44 @@ namespace funeraria.Forms
                 comboUrnBox.Enabled = !isReadOnly;
                 comboCrematoryBox.Enabled = !isReadOnly;
                 
-                // Disable burial-specific controls
+                // Reset burial-specific controls
                 comboCemeteryBox.Enabled = false;
                 comboCemeteryBox.SelectedIndex = -1;
-                comboCemeteryBox.Text = isReadOnly ? "" : "Not applicable for cremation";
+                comboCemeteryBox.Text = "Not applicable for cremation";
                 
                 textGraveNumberBox.Enabled = false;
-                textGraveNumberBox.Text = isReadOnly ? "" : "Not applicable for cremation";
+                textGraveNumberBox.Text = "Not applicable for cremation";
+                
+                // If coming from burial to cremation, clear any previous selections
+                if (!isReadOnly && comboCrematoryBox.Tag != null && (string)comboCrematoryBox.Tag == "burial")
+                {
+                    // Reset cremation selections - clear both selection and text
+                    comboCrematoryBox.SelectedIndex = -1;
+                    comboCrematoryBox.Text = "";
+                    comboUrnBox.SelectedIndex = -1;
+                    comboUrnBox.Text = "";
+                }
+                
+                // Mark that we're in cremation mode now
+                comboCrematoryBox.Tag = "cremation";
+            }
+            // Always ensure that Flower and Florist controls are properly set
+            if (!isReadOnly)
+            {
+                // Clear any selections in flower and florist if they were disabled before
+                if (comboFlowerBox.Text == "Not applicable for burial" || 
+                    comboFlowerBox.Text == "Not applicable for cremation")
+                {
+                    comboFlowerBox.SelectedIndex = -1;
+                    comboFlowerBox.Text = "";
+                }
+                
+                if (comboFloristBox.Text == "Not applicable for burial" || 
+                    comboFloristBox.Text == "Not applicable for cremation")
+                {
+                    comboFloristBox.SelectedIndex = -1;
+                    comboFloristBox.Text = "";
+                }
             }
         }
 

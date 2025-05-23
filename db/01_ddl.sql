@@ -1,5 +1,6 @@
-USE p2g7;
-GO
+-- SQLBook: Code
+-- USE p2g7;
+-- GO
 -- CREATE SCHEMA project
 -- GO
 
@@ -17,7 +18,7 @@ IF OBJECT_ID('dbo.Flowers', 'U') IS NOT NULL
     DROP TABLE dbo.Flowers
 IF OBJECT_ID('dbo.Florist', 'U') IS NOT NULL
     DROP TABLE dbo.Florist
-IF OBJECT_ID('dbo.Products', 'U') IS NOT NULL
+IF OBJECT_ID('dbo.Products', 'U') IS NOT NULL   
     DROP TABLE dbo.Products
 IF OBJECT_ID('dbo.Crematory', 'U') IS NOT NULL
     DROP TABLE dbo.Crematory
@@ -107,6 +108,7 @@ CREATE TABLE dbo.Funeral (
     location VARCHAR(255),
     deceased_bi VARCHAR(50) REFERENCES dbo.Deceased(person_bi),
     church_id INT REFERENCES dbo.Church(id),
+    priest_bi VARCHAR(50) REFERENCES dbo.Priest(representative_bi),
 	PRIMARY KEY (num_process)
 );
 

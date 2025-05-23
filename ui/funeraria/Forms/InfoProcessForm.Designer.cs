@@ -33,6 +33,10 @@
             this.textProccessBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.comboCemeteryBox = new System.Windows.Forms.ComboBox();
+            this.comboCrematoryBox = new System.Windows.Forms.ComboBox();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
             this.comboFloristBox = new System.Windows.Forms.ComboBox();
             this.comboFlowerBox = new System.Windows.Forms.ComboBox();
             this.label23 = new System.Windows.Forms.Label();
@@ -80,10 +84,6 @@
             this.PictureBackClick = new System.Windows.Forms.PictureBox();
             this.PictureTrashClick = new System.Windows.Forms.PictureBox();
             this.PicDeceased = new System.Windows.Forms.PictureBox();
-            this.comboCemeteryBox = new System.Windows.Forms.ComboBox();
-            this.comboCrematoryBox = new System.Windows.Forms.ComboBox();
-            this.label25 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBackClick)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureTrashClick)).BeginInit();
@@ -181,6 +181,42 @@
             this.panel1.Size = new System.Drawing.Size(1161, 742);
             this.panel1.TabIndex = 9;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // comboCemeteryBox
+            // 
+            this.comboCemeteryBox.FormattingEnabled = true;
+            this.comboCemeteryBox.Location = new System.Drawing.Point(665, 882);
+            this.comboCemeteryBox.Name = "comboCemeteryBox";
+            this.comboCemeteryBox.Size = new System.Drawing.Size(312, 24);
+            this.comboCemeteryBox.TabIndex = 61;
+            // 
+            // comboCrematoryBox
+            // 
+            this.comboCrematoryBox.FormattingEnabled = true;
+            this.comboCrematoryBox.Location = new System.Drawing.Point(182, 882);
+            this.comboCrematoryBox.Name = "comboCrematoryBox";
+            this.comboCrematoryBox.Size = new System.Drawing.Size(283, 24);
+            this.comboCrematoryBox.TabIndex = 60;
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label25.Location = new System.Drawing.Point(50, 878);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(112, 25);
+            this.label25.TabIndex = 59;
+            this.label25.Text = "Crematory";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label26.Location = new System.Drawing.Point(533, 878);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(105, 25);
+            this.label26.TabIndex = 58;
+            this.label26.Text = "Cemetery";
             // 
             // comboFloristBox
             // 
@@ -620,48 +656,12 @@
             this.PicDeceased.TabIndex = 0;
             this.PicDeceased.TabStop = false;
             // 
-            // comboCemeteryBox
-            // 
-            this.comboCemeteryBox.FormattingEnabled = true;
-            this.comboCemeteryBox.Location = new System.Drawing.Point(665, 882);
-            this.comboCemeteryBox.Name = "comboCemeteryBox";
-            this.comboCemeteryBox.Size = new System.Drawing.Size(312, 24);
-            this.comboCemeteryBox.TabIndex = 61;
-            // 
-            // comboCrematoryBox
-            // 
-            this.comboCrematoryBox.FormattingEnabled = true;
-            this.comboCrematoryBox.Location = new System.Drawing.Point(182, 882);
-            this.comboCrematoryBox.Name = "comboCrematoryBox";
-            this.comboCrematoryBox.Size = new System.Drawing.Size(283, 24);
-            this.comboCrematoryBox.TabIndex = 60;
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(50, 878);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(112, 25);
-            this.label25.TabIndex = 59;
-            this.label25.Text = "Crematory";
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.Location = new System.Drawing.Point(533, 878);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(105, 25);
-            this.label26.TabIndex = 58;
-            this.label26.Text = "Cemetery";
-            // 
             // InfoProcessForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(216)))));
-            this.ClientSize = new System.Drawing.Size(1272, 972);
+            this.ClientSize = new System.Drawing.Size(1272, 1001);
             this.Controls.Add(this.buttonChangeIcon);
             this.Controls.Add(this.SaveButtonProcess);
             this.Controls.Add(this.panel1);

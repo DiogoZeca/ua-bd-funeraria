@@ -31,7 +31,7 @@ namespace funeraria.Forms
             checkedListBox1.Items.Clear();
             checkedListBox1.Items.Add("Coffin");
             checkedListBox1.Items.Add("Urn");
-            checkedListBox1.Items.Add("Flowers");
+            checkedListBox1.Items.Add("Flower");
 
             checkedListBox1.ItemCheck += (s, e) =>
             {
@@ -153,7 +153,7 @@ namespace funeraria.Forms
             // Info Page
             DataGridViewImageColumn picture = new DataGridViewImageColumn();
             picture.Name = "picture";
-            picture.HeaderText = "picture";
+            picture.HeaderText = "PICTURE";
             picture.ImageLayout = DataGridViewImageCellLayout.Zoom;
             picture.Width = 50;
             dataGridProcess.Columns.Add(picture);
@@ -181,7 +181,7 @@ namespace funeraria.Forms
             dataGridProcess.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "local",
-                HeaderText = "Local"
+                HeaderText = "LOCAL"
             });
 
             dataGridProcess.Columns.Add(new DataGridViewTextBoxColumn
