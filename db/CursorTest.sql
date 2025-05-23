@@ -1,4 +1,8 @@
--- SQLBook: Code
+USE p2g7;
+GO
+
+
+
 GO
 CREATE PROCEDURE sp_CalculateFuneralCosts
 AS

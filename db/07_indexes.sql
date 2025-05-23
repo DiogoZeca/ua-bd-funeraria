@@ -1,3 +1,7 @@
+-- SQLBook: Code
+USE p2g7;
+GO
+
 -- INDICES PARA ACELERAR JOINS e WHERES
 CREATE INDEX idx_funeral_num_process ON Funeral(num_process);
 CREATE INDEX idx_process_num_process ON Process(num_process);

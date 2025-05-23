@@ -72,8 +72,14 @@ namespace funeraria.Forms
             comboCerimonyPlaceBox.Enabled = !readOnly;
             comboUrnBox.Enabled = !readOnly;
             comboCoffinBox.Enabled = !readOnly;
+            
+            // Cemetery and crematory combo boxes
             comboCemeteryBox.Enabled = !readOnly;
             comboCrematoryBox.Enabled = !readOnly;
+            
+            // Florist and flower combo boxes (should always be accessible)
+            comboFloristBox.Enabled = !readOnly;
+            comboFlowerBox.Enabled = !readOnly;
         }
 
 
@@ -156,6 +162,12 @@ namespace funeraria.Forms
 
             // Load crematories
             LoadCrematories();
+
+            // Load flowers
+            LoadFlowers();
+
+            // Load florists
+            LoadFlorists();
         }
 
         private void LoadFuneralTypes()
@@ -559,67 +571,112 @@ namespace funeraria.Forms
 
 
 
+        private void LoadFlorists()
+        {
+            Database db = Database.GetDatabase();
+            comboFloristBox.Items.Clear();  // Make sure we're using the right combobox
+
+            DataTable florists = db.GetAllFloristList();
+            foreach (DataRow row in florists.Rows)
+            {
+                string floristNif = row["nif"].ToString();
+                string floristName = row["name"].ToString();
+                string floristAddress = row["address"].ToString();
+                string floristContact = row["contact"].ToString();
+
+                // Create ComboboxItem to properly store the NIF
+                ComboboxItem item = new ComboboxItem
+                {
+                    Text = $"{floristName} - {floristAddress} (NIF: {floristNif})",
+                    Value = floristNif
+                };
+
+                comboFloristBox.Items.Add(item);
+            }
+        }
+
+
+
+
+        private void LoadFlowers()
+        {
+            Database db = Database.GetDatabase();
+            comboFlowerBox.Items.Clear();
+
+            DataTable products = db.GetAllProductId();
+            foreach (DataRow row in products.Rows)
+            {
+                decimal productId = Convert.ToDecimal(row["id"]);
+                string type = db.GetProductTypeById(productId);
+                
+                if (type == "Flower")
+                {
+                    DataTable flowerDetails = db.GetFlowerDetailsById((int)productId);
+                    if (flowerDetails != null && flowerDetails.Rows.Count > 0)
+                    {
+                        string flowerType = flowerDetails.Rows[0]["type"].ToString();
+                        string flowerColor = flowerDetails.Rows[0]["color"].ToString();
+                        
+                        ComboboxItem item = new ComboboxItem
+                        {
+                            Text = $"{flowerType} - {flowerColor} (ID: {productId})",
+                            Value = productId.ToString()
+                        };
+                        
+                        comboFlowerBox.Items.Add(item);
+                    }
+                }
+            }
+        }
+
+
+
+
+
 
         private void ComboFuneralTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Get whether the form is in read-only mode
             bool isReadOnly = !SaveButtonProcess.Visible;
 
+            // First set up controls that are always the same regardless of funeral type
+            comboFloristBox.Enabled = !isReadOnly;
+            comboFlowerBox.Enabled = !isReadOnly;
+
             // Check which funeral type is selected
             if (comboFuneralTypeBox.SelectedItem?.ToString() == "Burial")
             {
-                if (!isReadOnly)
-                {
-                    // If Burial is selected and not in read-only mode, disable Urn selection and Crematory selection
-                    comboUrnBox.Enabled = false;
-                    comboUrnBox.SelectedIndex = -1;
-                    comboUrnBox.Text = "Not applicable for burial";
-
-                    comboCrematoryBox.Enabled = false;
-                    comboCrematoryBox.SelectedIndex = -1;
-                    comboCrematoryBox.Text = "Not applicable for burial";
-
-                    textGraveNumberBox.Enabled = true;
-                    textGraveNumberBox.Text = "";
-
-                }
-                else
-                {
-                    // In read-only mode keep displaying all values
-                    comboUrnBox.Enabled = false;
-                    comboCrematoryBox.Enabled = false;
-                    comboCemeteryBox.Enabled = false;
-                    textGraveNumberBox.Enabled = false;
-                }
+                // Configure for Burial
+                comboCemeteryBox.Enabled = !isReadOnly;
+                textGraveNumberBox.Enabled = !isReadOnly;
+                
+                // Disable cremation-specific controls
+                comboUrnBox.Enabled = false;
+                comboUrnBox.SelectedIndex = -1;
+                comboUrnBox.Text = isReadOnly ? "" : "Not applicable for burial";
+                
+                comboCrematoryBox.Enabled = false;
+                comboCrematoryBox.SelectedIndex = -1;
+                comboCrematoryBox.Text = isReadOnly ? "" : "Not applicable for burial";
             }
-            else // "Cremation" is selected
+            else if (comboFuneralTypeBox.SelectedItem?.ToString() == "Cremation")
             {
-                if (!isReadOnly)
-                {
-                    // If Cremation is selected and not in read-only mode, enable Urn and Crematory selection
-                    comboUrnBox.Enabled = true;
-                    comboUrnBox.Text = "";
-
-                    comboCrematoryBox.Enabled = true;
-                    comboCrematoryBox.Text = "";
-
-                    // Enable Cemetery selection for cremation as well
-                    comboCemeteryBox.Enabled = false;
-                    comboCemeteryBox.SelectedIndex = -1;
-                    comboCemeteryBox.Text = "Not applicable for cremation";
-
-                    textGraveNumberBox.Enabled = false;
-                    textGraveNumberBox.Text = "Not applicable for cremation";
-                }
-                else
-                {
-                    // In read-only mode keep displaying all values
-                    comboUrnBox.Enabled = false;
-                    comboCrematoryBox.Enabled = false;
-                    comboCemeteryBox.Enabled = false;
-                }
+                // Configure for Cremation
+                comboUrnBox.Enabled = !isReadOnly;
+                comboCrematoryBox.Enabled = !isReadOnly;
+                
+                // Disable burial-specific controls
+                comboCemeteryBox.Enabled = false;
+                comboCemeteryBox.SelectedIndex = -1;
+                comboCemeteryBox.Text = isReadOnly ? "" : "Not applicable for cremation";
+                
+                textGraveNumberBox.Enabled = false;
+                textGraveNumberBox.Text = isReadOnly ? "" : "Not applicable for cremation";
             }
         }
+
+
+
         private void SaveButtonProcess_Click(object sender, EventArgs e)
         {
             try

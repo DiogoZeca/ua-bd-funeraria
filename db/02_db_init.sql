@@ -1,4 +1,5 @@
--- SQLBook: Code
+USE p2g7;
+GO
 
 INSERT INTO dbo.Users (name, username, password, mail, ProfilePicture) VALUES
 ('Beatriz Costa', 'user1', '0b14d501a594442a01c6859541bcb3e8164d183d32937b', 'user1@example.com', NULL),

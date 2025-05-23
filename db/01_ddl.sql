@@ -1,4 +1,5 @@
--- SQLBook: Code
+USE p2g7;
+GO
 -- CREATE SCHEMA project
 -- GO
 

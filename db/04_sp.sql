@@ -1,4 +1,6 @@
--- SQLBook: Code
+USE p2g7;
+GO
+
 DROP PROCEDURE IF EXISTS AuthenticateUser;
 DROP PROCEDURE IF EXISTS RegisterUser;
 DROP PROCEDURE IF EXISTS sp_addCemetery;

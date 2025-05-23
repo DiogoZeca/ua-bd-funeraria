@@ -1,4 +1,6 @@
--- SQLBook: Code
+USE p2g7;
+GO
+
 DROP FUNCTION IF EXISTS dbo.findBiExists;
 DROP FUNCTION IF EXISTS dbo.findNifExists;
 DROP FUNCTION IF EXISTS dbo.findProcNumberExists;

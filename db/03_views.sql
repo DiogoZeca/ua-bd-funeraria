@@ -1,4 +1,7 @@
--- SQLBook: Code
+USE p2g7;
+GO
+
+
 DROP VIEW IF EXISTS vw_AllProducts;
 DROP VIEW IF EXISTS vw_PriestDetails;
 DROP VIEW IF EXISTS vw_PriestWithPerson;
