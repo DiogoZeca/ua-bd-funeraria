@@ -1,62 +1,62 @@
-# BD: Trabalho Prático APF-T
+# BD: Practical Work APF-T
 
-**Grupo**: P2G7
+**Group**: P2G7
 
 - Diogo Silva, MEC: 108212
 - Duarte Santos, MEC: 113304
 
-## Instruções de Execução (Development)
+## Execution Instructions (Development)
 
-Pode alterar as credenciais de acesso à base de dados na class `Database` no projeto, que se encontra dentro da pasta `./ui/funeraria/Entities/` modificando as variáveis `serverAddress`, `databaseName`, `databaseUsername` e `databasePassword`.
+You can change the database access credentials in the `Database` class in the project, located in the `./ui/funeraria/Entities/` folder by modifying the variables `serverAddress`, `databaseName`, `databaseUsername` and `databasePassword`.
 
-[Ficheiro Database](./ui/funeraria/Entities/Database "Database.cs")
-
----
-
-## Introdução
-
-A nossa base de dados tem como objetivo apoiar na gestão de serviços funerários, organizando de forma eficiente os processos, clientes, produtos, cerimónias e recursos humanos envolvidos.
+[Database File](./ui/funeraria/Entities/Database "Database.cs")
 
 ---
 
-## Análise de Requisitos
+## Introduction
 
-O sistema deve permitir:
-- Registo e autenticação de utilizadores responsáveis por gerir processos:
-    - Para o Registo é necessário: Nome, Email, Nome de utilizador, Palavra-passe e uma imagem (opcional);
-    - Para a autenticação apenas o Nome do utilizador e a password;
-- Possuir processos criados por um user (funcionário) que representam um serviço fúnebre com toda a informação detalhada;
-- Que os funcionários registem os dados essenciais do requerente (client). Esses dados devem incluir:
-    - Nome, Contacto, BI e Grau de parentesco em relação ao falecido;
-- Que as informações pessoais sobre o falecido que devem ser registadas:
-    - Nome, Sexo, Data de nascimento, Nacionalidade, Estado civil, Residência e BI;
-- Ter cada processo associado a um funeral;
-- A possibilidade de haver cerimónia religiosa e para tal vai ser preciso:
-    - Padre;
-    - Igreja;
-- Gerir o inventário e encomendas de produtos. Dentro dos produtos temos os seguintes tipos:
-    - Flores;
-    - Urnas;
-    - Caixão;
-- Ter Floristas que são fornecedores de flores;
-- Registar o local e preço associado ao destino final do corpo;
-- Escolher entre cremação ou enterro:
-    - Em caso de enterro, apenas precisamos de um caixão e de um cemitério;
-    - No caso de cremação, vamos precisar de uma Urna, um caixão e de um crematório;
+Our database aims to support the management of funeral services, efficiently organizing processes, clients, products, ceremonies and human resources involved.
 
 ---
 
-## DER - Diagrama Entidade Relacionamento/Entity Relationship Diagram
+## Requirements Analysis
 
-### Versão final
+The system must allow:
+- Registration and authentication of users responsible for managing processes:
+    - For Registration, the following are required: Name, Email, Username, Password and an image (optional);
+    - For authentication, only the Username and password are required;
+- Having processes created by a user (employee) that represent a funeral service with all detailed information;
+- That employees register the essential data of the applicant (client). This data must include:
+    - Name, Contact, ID and Degree of kinship in relation to the deceased;
+- That personal information about the deceased that must be registered:
+    - Name, Gender, Date of birth, Nationality, Marital status, Residence and ID;
+- Having each process associated with a funeral;
+- The possibility of having a religious ceremony and for that it will be necessary:
+    - Priest;
+    - Church;
+- Managing inventory and product orders. Within products we have the following types:
+    - Flowers;
+    - Urns;
+    - Coffin;
+- Having Florists who are flower suppliers;
+- Recording the location and price associated with the final destination of the body;
+- Choosing between cremation or burial:
+    - In case of burial, we only need a coffin and a cemetery;
+    - In case of cremation, we will need an Urn, a coffin and a crematorium;
+
+---
+
+## DER - Entity Relationship Diagram
+
+### Final Version
 
 ![DER Diagram!](./DER.png "DER Diagram")
 
 ---
 
-## ER - Esquema Relacional
+## ER - Relational Schema
 
-### Versão Final
+### Final Version
 
 ![ER Diagram!](./ER.png "ER Diagram")
 
@@ -74,36 +74,36 @@ O sistema deve permitir:
 
 #### Login
 
-Inicialmente é apresentado uma página de login para poder aceder à aplicação. Para tal usamos um stored procedure `AuthenticateUser` para fazer a autenticação com as credenciais do utilizador. O SP  `AuthenticateUser` devolve o id do utilizador se as credenciais estiverem corretas, caso contrário envia um error message.
+Initially, a login page is presented to access the application. For this we use a stored procedure `AuthenticateUser` to authenticate with the user's credentials. The SP `AuthenticateUser` returns the user's id if the credentials are correct, otherwise it sends an error message.
 
 <img src="screenshots/login.png" alt="Login!" title="AnImage" width="400"/>
 
 
 #### Register
 
-Neste campo, podemos fazer novo registo de novos funcionários na aplição, sendo necessário fazer login após o registo. Para o registo usamos o SP `RegisterUser`. Não são precisas queries adicionais, porque após o registo é preciso fazer login.
+In this field, we can register new employees in the application, requiring login after registration. For registration we use the SP `RegisterUser`. No additional queries are needed because after registration you need to login.
 
 <img src="screenshots/register.png" alt="Register!" title="AnImage" width="400"/>
 
 
 #### View Profile
 
-Nesta secção é possível ver todas as informações relacionadas ao funcionário. Neste página tb podemos editar e eleminar o mesmo.
+In this section it is possible to see all information related to the employee. On this page we can also edit and delete the same.
 
 ```sql
 SELECT * FROM Users WHERE id = @UserId
 ```
 <img src="screenshots/EditProfile.png" alt="Register!" title="AnImage" width="400"/>
 
-Para atualizar as informações do utilizador, utilizamos a stored procedure `sp_updateUser`.
+To update user information, we use the stored procedure `sp_updateUser`.
 
 ```sql
--- Para apagar a conta usamos:
+-- To delete the account we use:
 DELETE FROM Users WHERE id = @UserID
 ```
 
 #### Inventory Page
-Nesta secção é feita a gestão de inventário da funerária, nomeadamente dos  caixões, urnas e das flores. Para dar fetch de todo o inventário fazemos:
+In this section, the funeral home's inventory is managed, namely coffins, urns and flowers. To fetch the entire inventory we do:
 
 ```sql
 SELECT * FROM Products
@@ -111,56 +111,56 @@ SELECT * FROM Products
 
 <img src="screenshots/Inventory.png" alt="Register!" title="AnImage" width="400"/>
 
-Além disso podemos filtrar os produtos por tipo. Para tal, usamos uma view para ir buscar o Type de cada produto, `vw_AllProducts`. Nesta query, é necessário passar o `@productID` para selecionar o tipo do mesmo.
+Furthermore, we can filter products by type. For this, we use a view to fetch the Type of each product, `vw_AllProducts`. In this query, it is necessary to pass the `@productID` to select its type.
 
 ```sql
 SELECT Tipo FROM vw_AllProducts WHERE id = @productID
 ```
 
-No exemplo abaixo estamos apenas a selecionar os produtos do tipo `coffin`.
+In the example below we are only selecting products of type `coffin`.
 
 <img src="screenshots/InventoryFilters.png" alt="Register!" title="AnImage" width="400"/>
 
-Ainda no página do inventário, podemos comprar mais quantidade de um produto e ver os detalhes do mesmo. 
+Still on the inventory page, we can buy more quantity of a product and see its details.
 
-Para atualizar o stock de um produto em especifico:
+To update the stock of a specific product:
 
 ```sql
--- Selecionar o produto
+-- Select the product
 SELECT stock FROM Products WHERE id = @productId
 
--- Atualizar o stock
+-- Update the stock
 UPDATE Products SET stock = stock + @quantity WHERE id = @productId
 ```
 
 <img src="screenshots/ShopProduct.png" alt="Register!" title="AnImage" width="400"/>
 
 
-Para ver detalhes do mesmo:
+To view details of the same:
 
 <img src="screenshots/InfoProduct.png" alt="Register!" title="AnImage" width="400"/>
 
 
-#### DataBase Page
+#### Database Page
 
-A aba DataBase da funerária é onde o funcionário faz a gestão de:
-- Cemitérios;
-- Crematórios;
-- Padres;
-- Igrejas;
-- Florista;
+The Database tab of the funeral home is where the employee manages:
+- Cemeteries;
+- Crematories;
+- Priests;
+- Churches;
+- Florists;
 
 <img src="screenshots/DataBasePage.png" alt="Register!" title="AnImage" width="400"/>
 
-**Gestão de um crematório**
+**Crematory Management**
 
-Dentro da página de Base de Dados, se selecionarmos a aba do crematório, vamos diretamente para a página de gestão de crematórios. Aqui, podemos criar/editar/eliminar crematórios.
+Within the Database page, if we select the crematory tab, we go directly to the crematory management page. Here, we can create/edit/delete crematories.
 
 <img src="screenshots/CrematoryPage.png" alt="Register!" title="AnImage" width="400"/>
 
-**Criação de um novo crematório**
+**Creating a new crematory**
 
-Para adicionar um novo crematório temos que fazer uso de um sp `sp_addCrematory`. Para o fazer temos que dar uma `@Location`, um `@Contact` e um `@Price`.
+To add a new crematory we have to make use of a sp `sp_addCrematory`. To do this we have to provide a `@Location`, a `@Contact` and a `@Price`.
 
 ```sql
 CREATE PROCEDURE sp_addCrematory
@@ -177,7 +177,7 @@ BEGIN
         IF EXISTS (SELECT * FROM Crematory WHERE contact = @Contact)
         BEGIN
             SET @Status = 0;
-            SET @Message = 'Cemetery with contact already exist!';
+            SET @Message = 'Crematory with contact already exists!';
             RETURN;
         END
 
@@ -185,7 +185,7 @@ BEGIN
         VALUES(@Location, @Contact, @Price)
 
         SET @Status = 1;
-        SET @Message = 'Crematory add successfully';
+        SET @Message = 'Crematory added successfully';
     END TRY
     BEGIN CATCH
         SET @Status = 0;
@@ -197,16 +197,16 @@ GO
 
 <img src="screenshots/AddCrematory.png" alt="Register!" title="AnImage" width="250"/>
 
-**Editar um Crematório**
+**Edit a Crematory**
 
-Como referido anteriormente, é possível editar um crematório, e para isso utilizamos a stored procedure `sp_updateCrematory`.
+As mentioned earlier, it is possible to edit a crematory, and for this we use the stored procedure `sp_updateCrematory`.
 
 
 <img src="screenshots/EditCrematory.png" alt="Register!" title="AnImage" width="250"/>
 
 
 
-Para apagar um crematório é utilizada a stored procedure `sp_removeGameImage`.
+To delete a crematory, the stored procedure `sp_removeGameImage` is used.
 
 ```sql
 DELETE FROM Crematory WHERE id = @CrematoryID
@@ -214,17 +214,17 @@ DELETE FROM Crematory WHERE id = @CrematoryID
 
 
 ```
-Esta lógica é aplicada para os restantes elementos da página Base dados da funerária.
+This logic is applied to the remaining elements of the funeral home Database page.
 ```
 
 #### Process Page
 
-Nesta página é feita a gestão de todos os processos funebres. No fundo, aqui é onde o funcinário cria um processo relativo a um funeral e detalha toda a informação do mesmo. 
+This page manages all funeral processes. Essentially, this is where the employee creates a process related to a funeral and details all its information. 
 
 <img src="screenshots/ProcessPage.png" alt="Register!" title="AnImage" width="400"/>
 
 
-Primeiramente quando queremos criar um novo processo precisamos de lhe associar um número (process number). Para tal fazemos uso de uma UDF para verificar a existência de um processo já com esse número, `findProcNumberExists`.
+First, when we want to create a new process, we need to associate it with a number (process number). For this we use a UDF to verify the existence of a process already with that number, `findProcNumberExists`.
 
 ```sql
 CREATE FUNCTION dbo.findProcNumberExists(@proc_number INT)
@@ -247,21 +247,21 @@ END
 GO
 ```
 
-Para criar um processo vamos precisar das seguintes entidades:
+To create a process we will need the following entities:
 - Deceased;
 - Person;
 - Representative;
 - Client;
 - Funeral;
 - Have;
-- Cremation; (dependendo do tipo de funeral)
-- Burial; (dependendo do tipo de funeral)
+- Cremation; (depending on the type of funeral)
+- Burial; (depending on the type of funeral)
 
-Este processo de criação do processo é feito usando o SP `sp_addProcess`. Como este passo envolve inserção de dados em diversas tabelas então fazemos uso do `TRANSACTION` (para caso de erro dar rollback). 
+This process creation process is done using the SP `sp_addProcess`. Since this step involves inserting data into several tables, we use `TRANSACTION` (in case of error to rollback). 
 
-**Eliminar um processo**
+**Delete a process**
 
-Para eliminar um processo usamos um SP `sp_DeleteProcess` e ainda um trigger `trg_DeleteProcess`. Este último serve de suporte que para quando eliminamos um processo, o mesmo remover informação sobre o processo em causa em tabelas associadas.
+To delete a process we use a SP `sp_DeleteProcess` and also a trigger `trg_DeleteProcess`. The latter serves as support so that when we delete a process, it removes information about the process in question from associated tables.
 
 ```sql
 CREATE TRIGGER trg_DeleteProcess
@@ -302,9 +302,9 @@ GO
 
 ---
 
-### Aplicação de Cursors
+### Application of Cursors
 
-No nosso projeto de gestão de funerária, os cursores são principalmente utilizados para o cálculo dinâmico de orçamentos de processos fúnebres, implementados na stored procedure `sp_UpdateFuneralBudgets`. Eis como funcionam:
+In our funeral home management project, cursors are mainly used for the dynamic calculation of funeral process budgets, implemented in the stored procedure `sp_UpdateFuneralBudgets`. Here's how they work:
 
 ```sql
 CREATE PROCEDURE sp_UpdateFuneralBudgets
@@ -382,20 +382,20 @@ BEGIN
             SET @container_price = ISNULL(@cremation_coffin_price, 0) + ISNULL(@urn_price, 0);
         END
 
-        -- Preço das flores: Produtos ligados à tabela Flowers
+        -- Flower price: Products linked to the Flowers table
         SELECT @flower_price = SUM(p.price * f.quantity)
         FROM Flowers f
         JOIN Products p ON p.id = f.id
         WHERE f.process_num = @process_id;
 
-        -- Preço do padre
+        -- Priest price
         SELECT @priest_price = p.price
         FROM Funeral f
         JOIN Priest p ON p.representative_bi = f.priest_bi
         WHERE f.num_process = @process_id;
 
 
-        -- Soma total
+        -- Total sum
         SET @total_price = ISNULL(@cemetery_price, 0) +
                            ISNULL(@crematory_price, 0) +
                            ISNULL(@container_price, 0) +
@@ -424,23 +424,23 @@ END;
 GO
 ```
 
-Este cursor percorre todos os registos na tabela Funeral, determinando se cada processo é um enterro ou uma cremação
+This cursor goes through all records in the Funeral table, determining whether each process is a burial or cremation
 
-#### Funcionamento do Cálculo de Orçamentos
-- Para cada registo do funeral, o cursor:
+#### Budget Calculation Functionality
+- For each funeral record, the cursor:
 
-1. Reinicia variáveis de preço no início de cada iteração
-2. Aplica cálculos diferentes consoante o tipo de funeral:
-    - Para Enterro: Obtém o preço do cemitério e do caixão
-    - Para Cremação: Obtém o preço do crematório, do caixão e da urna
-3. Calcula custos adicionais que são comuns a todos os funerais:
-    - Preço das flores
-    - Honorários do padre
-4. Soma todos os componentes para chegar ao orçamento total
-5. Atualiza a tabela Process com o valor calculado
+1. Resets price variables at the beginning of each iteration
+2. Applies different calculations depending on the funeral type:
+    - For Burial: Gets the cemetery and coffin price
+    - For Cremation: Gets the crematory, coffin and urn price
+3. Calculates additional costs that are common to all funerals:
+    - Flower price
+    - Priest fees
+4. Sums all components to arrive at the total budget
+5. Updates the Process table with the calculated value
 
-#### Integração com a Aplicação
-O cursor é invocado através do método `UpdateProcessBudget()` na classe `Database.cs`, que chama a stored procedure:
+#### Integration with the Application
+The cursor is invoked through the `UpdateProcessBudget()` method in the `Database.cs` class, which calls the stored procedure:
 
 ```csharp
 public void UpdateProcessBudget() {
@@ -450,26 +450,26 @@ public void UpdateProcessBudget() {
     }
 }
 ```
-Vantagens:
-1. **Cálculo Personalizado**: Permite calcular orçamentos específicos para cada funeral baseado nos seus componentes únicos
-2. **Diferenciação por tipo**: Gere adequadamente os diferentes requisitos de preços para enterros e cremações
-3. **Centralização da lógica**: Mantém toda a lógica de cálculo de orçamentos numa única stored procedure
-4. **Diagnóstico facilitado**: Inclui instruções PRINT para depuração que ajudam a verificar os cálculos
+Advantages:
+1. **Custom Calculation**: Allows calculating specific budgets for each funeral based on its unique components
+2. **Type Differentiation**: Properly manages the different price requirements for burials and cremations
+3. **Logic Centralization**: Keeps all budget calculation logic in a single stored procedure
+4. **Facilitated Diagnostics**: Includes PRINT statements for debugging that help verify calculations
 
 
 
-A implementação é apoiada por índices específicos que melhoram o desempenho das operações do cursor, minimizando o impacto na performance global do sistema.
+The implementation is supported by specific indexes that improve the performance of cursor operations, minimizing the impact on the overall system performance.
 
 
 <img src="screenshots/Cursors.png" alt="Register!" title="AnImage" width="400"/>
 
 ---
-### Aplicação dos Índices
+### Application of Indexes
 
-#### Implementação
-Em relação aos indices, implementámos vários tipos de modo a otimizar o desempenho da base de dados. Estes índices estão organizados em categorias específicas no ficheiro `07_Indexes.sql`
+#### Implementation
+Regarding indexes, we implemented several types to optimize database performance. These indexes are organized into specific categories in the `07_Indexes.sql` file
 
-1. Índices para acelerar JOINS e WHERES
+1. Indexes to speed up JOINS and WHEREs
 ```sql
 CREATE INDEX idx_funeral_num_process ON Funeral(num_process);
 CREATE INDEX idx_process_num_process ON Process(num_process);
@@ -479,20 +479,20 @@ CREATE INDEX idx_burial_funeral_id ON Burial(funeral_id);
 CREATE INDEX idx_cremation_funeral_id ON Cremation(funeral_id);
 CREATE INDEX idx_flowers_process_num ON Flowers(process_num);
 ```
-São Fundamentais para acelerar a execução do cursor funeral cursor na stored procedure `sp_UpdateFuneralBudgets`, pois otimizam as junções entre as tabelas relacionadas a funerais.
+They are fundamental for speeding up the execution of the funeral cursor in the stored procedure `sp_UpdateFuneralBudgets`, as they optimize the joins between tables related to funerals.
 
 
-2. Índices para colunas frequentemente acedidas
+2. Indexes for frequently accessed columns
 ```sql
 CREATE INDEX idx_users_username ON Users(username);
 CREATE INDEX idx_users_email ON Users(mail);
 CREATE INDEX idx_users_id ON Users(id);
 CREATE INDEX idx_person_bi ON Person(bi);
 ```
-Estes índices melhoram o desempenho das operações de autenticação e pesquisa de utilizadores e pessoas, que são frequentemente consultadas nas stored procedures `AuthenticateUser` e `RegisterUser`.
+These indexes improve the performance of authentication and user search operations, which are frequently consulted in the stored procedures `AuthenticateUser` and `RegisterUser`.
 
 
-3. Índices para análises e relatórios
+3. Indexes for analysis and reports
 
 ```sql
 CREATE INDEX idx_process_start_date ON Process(start_date);
@@ -500,71 +500,71 @@ CREATE INDEX idx_products_stock ON Products(stock);
 CREATE INDEX idx_process_type_of_payment ON Process(type_of_payment);
 CREATE INDEX idx_funeral_funeral_date ON Funeral(funeral_date);
 ```
-Estes índices facilitam a geração de relatórios e análises temporais sobre processos, pagamentos e gestão de stock.
+These indexes facilitate the generation of reports and temporal analysis on processes, payments and stock management.
 
-4.  Índices compostos para consultas específicas
+4. Composite indexes for specific queries
 ```sql
 CREATE INDEX idx_person_bi_name ON Person(bi, name);
 CREATE INDEX idx_funeral_church__deceased ON Funeral(church_id, deceased_bi);
 CREATE INDEX idx_produts_price_stock ON Products(price, stock);
 ```
-Os índices compostos são particularmente úteis para as views complexas como `vw_LoadProcess` e `vw_AllProducts`, que utilizam múltiplas condições de junção.
+Composite indexes are particularly useful for complex views like `vw_LoadProcess` and `vw_AllProducts`, which use multiple join conditions.
 
 
-5. Índices únicos para integridade de dados
+5. Unique indexes for data integrity
 ```sql
 CREATE UNIQUE INDEX idx_users_unique_username ON Users(username);
 CREATE UNIQUE INDEX idx_users_unique_email ON Users(mail);
 ```
-Estes índices garantem a unicidade dos nomes de utilizador e e-mails, reforçando a integridade dos dados fundamentais do sistema.
+These indexes ensure the uniqueness of usernames and emails, reinforcing the integrity of the system's fundamental data.
 
 ---
 
-## Normalização/Normalization
+## Normalization
 
-Para minimizar a duplicação de dados e otimizar o uso de espaço, aplicámos a normalização até à 3FN. Com isto asseguramos que cada tabela possuí uma primary key, garantindo que cada registo é único. Utilizámos foreign keys para referenciar outras tabelas sem necessidade de duplicar informação. Os dados foram distribuídos por várias tabelas de forma a evitar a repetição e a garantir a integridade dos mesmos.
-
-
-#### Primeira Forma Normal (1FN)
-
-**Critério:** Todos os atributos nas tabelas são atómicos. Não há listas, arrays ou campos compostos.
-
-- Todas as tabelas utilizam **atributos atómicos**, sem listas ou estruturas compostas.
-- Exemplo: `Flowers`, `Coffin`, `Urn` são entidades separadas, não agrupadas em campos compostos dentro de `Products`.
-
-**Conclusão**: Todas as tabelas estão em 1FN.
+To minimize data duplication and optimize space usage, we applied normalization up to 3NF. With this we ensure that each table has a primary key, ensuring that each record is unique. We used foreign keys to reference other tables without the need to duplicate information. The data was distributed across several tables to avoid repetition and ensure data integrity.
 
 
-#### Segunda Forma Normal (2FN)
+#### First Normal Form (1NF)
 
-**Critério:**  As tabelas não mostram dependências parciais. Por exemplo, Process tem client_id, e os dados do cliente estão noutra tabela (Client, Representative, Person), o que evita dependência parcial de atributos.
+**Criteria:** All attributes in tables are atomic. There are no lists, arrays or compound fields.
 
-- Tabelas com chaves compostas como `Have(priest_bi, church_id)` foram analisadas.
-- Todos os atributos dependem da chave **por completo**.
-- Tabelas como `Client`, `Representative`, `Deceased` têm **chaves simples**, portanto **não se aplicam dependências parciais**.
+- All tables use **atomic attributes**, without lists or compound structures.
+- Example: `Flowers`, `Coffin`, `Urn` are separate entities, not grouped in compound fields within `Products`.
 
-**Conclusão**: Todas as tabelas estão em 2FN.
-
-#### Terceira Forma Normal (3FN)
-
-**Critério:** Não existem dependências transitivas óbvias. Ex.: os dados da pessoa falecida estão em Deceased e os seus dados pessoais estão em Person, evitando redundância e facilitando atualizações.
-
-- Os atributos `name`, `contact`, `title` estão bem separados entre `Person`, `Representative` e `Priest`.
-- Em `Process`, `client_id` é uma FK para `Client`, e os detalhes do cliente estão fora da tabela (sem dependência transitiva).
-- O modelo evita repetição de atributos como `price`, `location`, que pertencem às tabelas especializadas como `Cemetery` e `Crematory`.
-
-**Conclusão**: A estrutura está livre de dependências transitivas e cumpre a 3FN.
+**Conclusion**: All tables are in 1NF.
 
 
-#### Conclusões finais
+#### Second Normal Form (2NF)
 
-A base de dados encontra-se **completamente normalizada até à 3FN**. Foi evitada qualquer violação à integridade ou presença de dados redundantes.
+**Criteria:** Tables do not show partial dependencies. For example, Process has client_id, and the client data is in another table (Client, Representative, Person), which avoids partial dependency of attributes.
+
+- Tables with composite keys like `Have(priest_bi, church_id)` were analyzed.
+- All attributes depend on the key **completely**.
+- Tables like `Client`, `Representative`, `Deceased` have **simple keys**, therefore **partial dependencies do not apply**.
+
+**Conclusion**: All tables are in 2NF.
+
+#### Third Normal Form (3NF)
+
+**Criteria:** There are no obvious transitive dependencies. Ex.: the deceased person's data is in Deceased and their personal data is in Person, avoiding redundancy and facilitating updates.
+
+- The attributes `name`, `contact`, `title` are well separated between `Person`, `Representative` and `Priest`.
+- In `Process`, `client_id` is a FK to `Client`, and the client details are outside the table (no transitive dependency).
+- The model avoids repetition of attributes like `price`, `location`, which belong to specialized tables like `Cemetery` and `Crematory`.
+
+**Conclusion**: The structure is free of transitive dependencies and complies with 3NF.
+
+
+#### Final conclusions
+
+The database is **completely normalized up to 3NF**. Any violation of integrity or presence of redundant data was avoided.
 
 ---
 
-## Dados iniciais da dabase de dados/Database init data
+## Database Initial Data
 
-Os ficheiros devem ser executados pela ordem que estão numerados para que não haja erros devido a dependências.
+The files must be executed in the order they are numbered so that there are no errors due to dependencies.
 
 [01_ddl.sql](db/01_ddl.sql "DDL File")
 

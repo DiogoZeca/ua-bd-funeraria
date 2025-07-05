@@ -1,7 +1,5 @@
 # ua-bd-funeraria
-Projeto Base de Dados 2025
-
-Grupo P2G7
+Data Base Project for the course of Database at University of Aveiro Group P2G7
 - Diogo Silva - nMec108212
 - Duarte Santos - nMec113304
 
@@ -10,12 +8,12 @@ Grupo P2G7
 [SQL DDL File](db/01_CreateTables.sql "SQL DDL File") 
 
 
-## Configuração da Conexão com a Base de Dados
-Para testar a aplicação com suas próprias credenciais de banco de dados, é necessário modificar o arquivo:
+## Database Connection Configuration
+To test the application with your own database credentials, you need to modify the file:
 
-`ui/funeraria/Entities/Database.cs` (linhas 19-24)
+`ui/funeraria/Entities/Database.cs` (lines 19-24)
 
-Neste arquivo, localize as seguintes linhas de código que contêm as informações de conexão:
+In this file, locate the following lines of code that contain the connection information:
 
 ```csharp
 private static string serverAddress = "tcp:mednat.ieeta.pt\\SQLSERVER,8101";
@@ -25,7 +23,7 @@ private static string databasePassword = "Zeca_Duarte_2025";
 private static string connectionString = "data source=" + serverAddress + ";initial catalog=" + databaseName + ";uid=" + databaseUsername + ";password=" + databasePassword;
 ```
 
-Nestas linhas de código, apenas devem ser substituidas as credenciais de logins para o servidor de base de dados: nome(databaseName), utilizador(databaseUsername), password(databasePassword) tal como o o endereço do servidor(serverAddress). 
+In these lines of code, only the login credentials for the database server should be replaced: name (databaseName), username (databaseUsername), password (databasePassword) as well as the server address (serverAddress). 
 
 
     
